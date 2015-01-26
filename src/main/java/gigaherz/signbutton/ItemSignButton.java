@@ -1,12 +1,8 @@
 package gigaherz.signbutton;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockSnow;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -33,7 +29,7 @@ public class ItemSignButton extends Item {
             return false;
         } else if (worldIn.isRemote) {
             return true;
-        } else {
+        } else if (worldIn.canBlockBePlaced(ModSignButton.signButton, pos, false, side, null, stack)) {
             worldIn.setBlockState(pos, ModSignButton.signButton.getDefaultState().withProperty(BlockSignButton.FACING, side), 3);
 
             --stack.stackSize;
@@ -44,6 +40,8 @@ public class ItemSignButton extends Item {
             }
 
             return true;
+        } else {
+            return false;
         }
     }
 }

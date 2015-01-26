@@ -4,8 +4,8 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -40,8 +40,6 @@ public class ModSignButton {
 
         GameRegistry.registerTileEntity(TileSignButton.class, "signButtonTile");
 
-        ItemBlock b;
-
         proxy.registerPreRenderers();
     }
 
@@ -51,7 +49,7 @@ public class ModSignButton {
         proxy.registerRenderers();
 
         // Recipes
-        GameRegistry.addShapelessRecipe(new ItemStack(signButton, 1), Items.sign, Blocks.stone_button);
-        GameRegistry.addShapelessRecipe(new ItemStack(signButton, 1), Items.sign, Blocks.wooden_button);
+        GameRegistry.addShapelessRecipe(new ItemStack(itemSignButton, 1), Items.sign, Blocks.stone_button);
+        GameRegistry.addShapelessRecipe(new ItemStack(itemSignButton, 1), Items.sign, Blocks.wooden_button);
     }
 }

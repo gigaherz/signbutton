@@ -27,7 +27,7 @@ public class BlockSignButton extends BlockSign {
     public static final PropertyBool POWERED = PropertyBool.create("powered");
 
     public BlockSignButton() {
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, Boolean.valueOf(false)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
         this.setTickRandomly(true);
         this.setCreativeTab(CreativeTabs.tabRedstone);
     }
@@ -35,7 +35,6 @@ public class BlockSignButton extends BlockSign {
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileSignButton();
     }
-
 
     @SideOnly(Side.CLIENT)
     public Item getItem(World worldIn, BlockPos pos) {
@@ -75,7 +74,7 @@ public class BlockSignButton extends BlockSign {
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return worldIn.isSideSolid(pos.offset(facing.getOpposite()), facing, true) ?
                 this.getDefaultState().withProperty(FACING, facing).withProperty(POWERED, false) :
-                this.getDefaultState().withProperty(FACING, EnumFacing.DOWN).withProperty(POWERED, Boolean.valueOf(false));
+                this.getDefaultState().withProperty(FACING, EnumFacing.DOWN).withProperty(POWERED, false);
     }
 
     public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
