@@ -2,18 +2,19 @@ package gigaherz.signbutton;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSign;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,38 +30,49 @@ public class BlockSignButton extends BlockSign {
     public BlockSignButton() {
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
         this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabRedstone);
+        setHardness(0.5F);
+        setSoundType(SoundType.WOOD);
+        setRegistryName("signButton");
+        setUnlocalizedName("signButton");
+        this.setCreativeTab(CreativeTabs.REDSTONE);
     }
 
+    @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileSignButton();
     }
 
-    @SideOnly(Side.CLIENT)
+    @Override
     public Item getItem(World worldIn, BlockPos pos) {
         return ModSignButton.itemSignButton;
     }
 
+    @Override
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state) {
         return null;
     }
 
+    @Override
     public int tickRate(World worldIn) {
         return 30;
     }
 
+    @Override
     public boolean isOpaqueCube() {
         return false;
     }
 
+    @Override
     public boolean isFullCube() {
         return false;
     }
 
+    @Override
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side) {
         return worldIn.isSideSolid(pos.offset(side.getOpposite()), side, true);
     }
 
+    @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         for (EnumFacing enumfacing : EnumFacing.values()) {
             if (worldIn.isSideSolid(pos.offset(enumfacing), enumfacing.getOpposite(), true)) {
@@ -71,12 +83,14 @@ public class BlockSignButton extends BlockSign {
         return false;
     }
 
+    @Override
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return worldIn.isSideSolid(pos.offset(facing.getOpposite()), facing, true) ?
                 this.getDefaultState().withProperty(FACING, facing).withProperty(POWERED, false) :
                 this.getDefaultState().withProperty(FACING, EnumFacing.DOWN).withProperty(POWERED, false);
     }
 
+    @Override
     public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock) {
         if (this.checkForDrop(worldIn, pos, state)) {
             EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
@@ -88,6 +102,7 @@ public class BlockSignButton extends BlockSign {
         }
     }
 
+    @Override
     private boolean checkForDrop(World worldIn, BlockPos pos, IBlockState state) {
         if (!this.canPlaceBlockAt(worldIn, pos)) {
             this.dropBlockAsItem(worldIn, pos, state, 0);
@@ -98,10 +113,12 @@ public class BlockSignButton extends BlockSign {
         }
     }
 
+    @Override
     public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
         this.updateBlockBounds(worldIn.getBlockState(pos));
     }
 
+    @Override
     private void updateBlockBounds(IBlockState state) {
         EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
         boolean powered = (Boolean) state.getValue(POWERED);
@@ -143,6 +160,7 @@ public class BlockSignButton extends BlockSign {
         }
     }
 
+    @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
         if ((Boolean) state.getValue(POWERED)) {
             return true;
@@ -156,6 +174,7 @@ public class BlockSignButton extends BlockSign {
         }
     }
 
+    @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         if ((Boolean) state.getValue(POWERED)) {
             this.notifyNeighbors(worldIn, pos, (EnumFacing) state.getValue(FACING));
@@ -164,24 +183,33 @@ public class BlockSignButton extends BlockSign {
         super.breakBlock(worldIn, pos, state);
     }
 
+    @Override
     public int isProvidingWeakPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
         return (Boolean) state.getValue(POWERED) ? 15 : 0;
     }
 
+    @Override
     public int isProvidingStrongPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side) {
         return !(Boolean) state.getValue(POWERED) ? 0 : (state.getValue(FACING) == side ? 15 : 0);
     }
 
+    @Override
     public boolean canProvidePower() {
         return true;
     }
 
-    public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random) {
+    @Override
+    public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random)
+    {
     }
 
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        if (!worldIn.isRemote) {
-            if ((Boolean) state.getValue(POWERED)) {
+    @Override
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    {
+        if (!worldIn.isRemote)
+        {
+            if ((Boolean) state.getValue(POWERED))
+            {
                 worldIn.setBlockState(pos, state.withProperty(POWERED, false));
                 notifyNeighbors(worldIn, pos, (EnumFacing) state.getValue(FACING));
                 worldIn.markBlockRangeForRenderUpdate(pos, pos);
@@ -190,124 +218,52 @@ public class BlockSignButton extends BlockSign {
         }
     }
 
-    public void setBlockBoundsForItemRender() {
+    @Override
+    public void setBlockBoundsForItemRender()
+    {
         float f = 0.1875F;
         float f1 = 0.125F;
         float f2 = 0.125F;
         this.setBlockBounds(0.5F - f, 0.5F - f1, 0.5F - f2, 0.5F + f, 0.5F + f1, 0.5F + f2);
     }
 
-    private void notifyNeighbors(World worldIn, BlockPos pos, EnumFacing facing) {
+    @Override
+    private void notifyNeighbors(World worldIn, BlockPos pos, EnumFacing facing)
+    {
         worldIn.notifyNeighborsOfStateChange(pos, this);
         worldIn.notifyNeighborsOfStateChange(pos.offset(facing.getOpposite()), this);
     }
 
-    public IBlockState getStateFromMeta(int meta) {
-        EnumFacing enumfacing;
-
-        switch (meta & 7) {
-            case 0:
-                enumfacing = EnumFacing.DOWN;
-                break;
-            case 1:
-                enumfacing = EnumFacing.EAST;
-                break;
-            case 2:
-                enumfacing = EnumFacing.WEST;
-                break;
-            case 3:
-                enumfacing = EnumFacing.SOUTH;
-                break;
-            case 4:
-                enumfacing = EnumFacing.NORTH;
-                break;
-            case 5:
-            default:
-                enumfacing = EnumFacing.UP;
-        }
+    @Override
+    public IBlockState getStateFromMeta(int meta)
+    {
+        int f = meta & 7;
+        if(f > EnumFacing.VALUES.length)
+            f = 0;
+        EnumFacing enumfacing = EnumFacing.VALUES[f];
 
         return this.getDefaultState().withProperty(FACING, enumfacing).withProperty(POWERED, (meta & 8) > 0);
     }
 
-    public int getMetaFromState(IBlockState state) {
-        int i;
+    @Override
+    public int getMetaFromState(IBlockState state)
+    {
+        int i = state.getValue(FACING).ordinal();
 
-        switch (SwitchEnumFacing.FACING_LOOKUP[((EnumFacing) state.getValue(FACING)).ordinal()]) {
-            case 1:
-                i = 1;
-                break;
-            case 2:
-                i = 2;
-                break;
-            case 3:
-                i = 3;
-                break;
-            case 4:
-                i = 4;
-                break;
-            case 5:
-            default:
-                i = 5;
-                break;
-            case 6:
-                i = 0;
-        }
-
-        if ((Boolean) state.getValue(POWERED)) {
+        if (state.getValue(POWERED)) {
             i |= 8;
         }
 
         return i;
     }
 
-    protected BlockState createBlockState() {
-        return new BlockState(this, FACING, POWERED);
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING, POWERED);
     }
 
     @Override
     public net.minecraft.item.Item getItemDropped(IBlockState state, Random rnd, int fortune) {
         return ModSignButton.itemSignButton;
-    }
-
-    static final class SwitchEnumFacing {
-        static final int[] FACING_LOOKUP = new int[EnumFacing.values().length];
-
-        static {
-            try {
-                FACING_LOOKUP[EnumFacing.EAST.ordinal()] = 1;
-            } catch (NoSuchFieldError var6) {
-                ;
-            }
-
-            try {
-                FACING_LOOKUP[EnumFacing.WEST.ordinal()] = 2;
-            } catch (NoSuchFieldError var5) {
-                ;
-            }
-
-            try {
-                FACING_LOOKUP[EnumFacing.SOUTH.ordinal()] = 3;
-            } catch (NoSuchFieldError var4) {
-                ;
-            }
-
-            try {
-                FACING_LOOKUP[EnumFacing.NORTH.ordinal()] = 4;
-            } catch (NoSuchFieldError var3) {
-                ;
-            }
-
-            try {
-                FACING_LOOKUP[EnumFacing.UP.ordinal()] = 5;
-            } catch (NoSuchFieldError var2) {
-                ;
-            }
-
-            try {
-                FACING_LOOKUP[EnumFacing.DOWN.ordinal()] = 6;
-            } catch (NoSuchFieldError var1) {
-                ;
-            }
-        }
     }
 }

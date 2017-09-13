@@ -5,7 +5,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -33,23 +32,24 @@ public class ModSignButton {
     public void preInit(FMLPreInitializationEvent event) {
 
         itemSignButton = new ItemSignButton().setUnlocalizedName("signButtonItem");
-        GameRegistry.registerItem(itemSignButton, "signButtonItem");
+        GameRegistry.register(itemSignButton, "signButtonItem");
 
-        signButton = new BlockSignButton().setHardness(0.5F).setStepSound(Block.soundTypeWood).setUnlocalizedName("signButton");
-        GameRegistry.registerBlock(signButton, "signButton");
+        signButton = new BlockSignButton();
+        GameRegistry.register(signButton);
 
         GameRegistry.registerTileEntity(TileSignButton.class, "signButtonTile");
 
-        proxy.registerPreRenderers();
+        proxy.preInit();
     }
 
     @EventHandler
-    public void init(FMLInitializationEvent event) {
-
-        proxy.registerRenderers();
+    public void init(FMLInitializationEvent event)
+    {
+        proxy.init();
 
         // Recipes
-        GameRegistry.addShapelessRecipe(new ItemStack(itemSignButton, 1), Items.sign, Blocks.stone_button);
-        GameRegistry.addShapelessRecipe(new ItemStack(itemSignButton, 1), Items.sign, Blocks.wooden_button);
+        GameRegistry.addShapelessRecipe(new ItemStack(itemSignButton, 1), Items.SIGN, Blocks.STONE_BUTTON);
+        GameRegistry.addShapelessRecipe(new ItemStack(itemSignButton, 1), Items.SIGN, Blocks.WOODEN_BUTTON);
     }
+
 }

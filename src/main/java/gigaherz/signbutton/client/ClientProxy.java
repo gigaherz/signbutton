@@ -13,11 +13,11 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 public class ClientProxy extends CommonProxy {
 
     // Client stuff
-    public void registerPreRenderers() {
+    public void preInit() {
     }
 
     @Override
-    public void registerRenderers() {
+    public void init() {
         Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().registerBuiltInBlocks(ModSignButton.signButton);
         ClientRegistry.bindTileEntitySpecialRenderer(TileSignButton.class, new TileSignButtonRenderer());
 
