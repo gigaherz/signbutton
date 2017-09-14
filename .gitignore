@@ -1,6 +1,9 @@
 /.gradle
 /.idea
 /eclipse
+/build
+/classes
+/run
 
 /CREDITS-fml.txt
 /LICENSE-fml.txt
@@ -17,3 +20,4 @@
 
 *.bak
 *.rhl
+*.iml

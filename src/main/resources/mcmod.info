@@ -1,11 +1,11 @@
 [
 {
-  "modid": "SignButton",
-  "name": "SignButton",
+  "modid": "signbutton",
+  "name": "Sign Button",
   "description": "Adds a clickable redstone sign",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "https://github.com/gigaherz/ElementsOfPower",
+  "url": "https://github.com/gigaherz/signbutton",
   "updateUrl": "",
   "authorList": ["gigaherz"],
   "credits": "",
