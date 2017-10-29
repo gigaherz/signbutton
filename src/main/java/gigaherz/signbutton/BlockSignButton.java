@@ -109,7 +109,8 @@ public class BlockSignButton extends BlockSign
     @Override
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
     {
-        return worldIn.getBlockState(pos.offset(side.getOpposite())).getBlockFaceShape(worldIn, pos, side) == BlockFaceShape.SOLID;
+        BlockPos pos1 = pos.offset(side.getOpposite());
+        return worldIn.getBlockState(pos1).getBlockFaceShape(worldIn, pos1, side) == BlockFaceShape.SOLID;
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class TileSignButtonRenderer extends TileEntitySpecialRenderer<TileSignButton>
 {
-    private static final ResourceLocation signTexture = new ResourceLocation("textures/entity/sign.png");
+    private static final ResourceLocation signTexture = new ResourceLocation("signbutton", "textures/entity/sign.png");
     private final ModelSign model = new ModelSign();
 
     public TileSignButtonRenderer()
