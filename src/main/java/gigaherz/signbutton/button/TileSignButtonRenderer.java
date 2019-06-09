@@ -1,30 +1,47 @@
-package gigaherz.signbutton;
+package gigaherz.signbutton.button;
 
-import net.minecraft.block.state.IBlockState;
+import com.mojang.blaze3d.platform.GlStateManager;
+import gigaherz.signbutton.ModSignButton;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiUtilRenderComponents;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.model.ModelSign;
+import net.minecraft.client.gui.RenderComponentsUtil;
+import net.minecraft.client.renderer.tileentity.model.SignModel;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.state.properties.AttachFace;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static net.minecraft.state.properties.BlockStateProperties.FACE;
-import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
-import static net.minecraft.state.properties.BlockStateProperties.POWERED;
+import static net.minecraft.state.properties.BlockStateProperties.*;
 
 public class TileSignButtonRenderer extends TileEntityRenderer<TileSignButton>
 {
-    private static final ResourceLocation signTexture = new ResourceLocation("signbutton", "textures/entity/sign.png");
-    private final ModelSign model = new ModelSign();
+    private static final ResourceLocation acaciaSignTexture = new ResourceLocation("textures/entity/signs/acacia.png");
+    private static final ResourceLocation birchSignTexture = new ResourceLocation("textures/entity/signs/birch.png");
+    private static final ResourceLocation dark_oakSignTexture = new ResourceLocation("textures/entity/signs/dark_oak.png");
+    private static final ResourceLocation jungleSignTexture = new ResourceLocation("textures/entity/signs/jungle.png");
+    private static final ResourceLocation oakSignTexture = new ResourceLocation("textures/entity/signs/oak.png");
+    private static final ResourceLocation spruceSignTexture = new ResourceLocation("textures/entity/signs/spruce.png");
+    private static final ResourceLocation signTexture = ModSignButton.location("textures/entity/sign_button.png");
+    private final SignModel model = new SignModel();
 
     public TileSignButtonRenderer()
     {
         model.getSignStick().isHidden = true;
+    }
+
+    public ResourceLocation getSignTexture(Block block)
+    {
+        if (block == ModSignButton.Blocks.ACACIA_SIGN_BUTTON) return acaciaSignTexture;
+        if (block == ModSignButton.Blocks.BIRCH_SIGN_BUTTON) return birchSignTexture;
+        if (block == ModSignButton.Blocks.DARK_OAK_SIGN_BUTTON) return dark_oakSignTexture;
+        if (block == ModSignButton.Blocks.JUNGLE_SIGN_BUTTON) return jungleSignTexture;
+        if (block == ModSignButton.Blocks.SPRUCE_SIGN_BUTTON) return spruceSignTexture;
+        return oakSignTexture;
     }
 
     @Override
@@ -32,16 +49,16 @@ public class TileSignButtonRenderer extends TileEntityRenderer<TileSignButton>
     {
         GlStateManager.pushMatrix();
 
-        IBlockState state = te.getBlockState();
+        BlockState state = te.getBlockState();
 
         boolean powered = state.get(POWERED);
-        EnumFacing facing = state.get(HORIZONTAL_FACING);
+        Direction facing = state.get(HORIZONTAL_FACING);
         AttachFace face = state.get(FACE);
 
         int rotAroundY = 0;
         int rotAroundX = 0;
 
-        switch(face)
+        switch (face)
         {
             case CEILING:
                 rotAroundX = 90;
@@ -82,13 +99,24 @@ public class TileSignButtonRenderer extends TileEntityRenderer<TileSignButton>
         }
         else
         {
-            this.bindTexture(signTexture);
+            this.bindTexture(getSignTexture(te.getBlockState().getBlock()));
         }
 
         GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
         GlStateManager.scalef(0.6666667F, -0.6666667F, -0.6666667F);
         this.model.renderSign();
+
+        if (destroyStage < 0)
+        {
+            GlStateManager.enableBlend();
+            GlStateManager.color4f(1,1,1,1);
+            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            this.bindTexture(signTexture);
+            this.model.renderSign();
+            GlStateManager.disableBlend();
+        }
+
         GlStateManager.popMatrix();
         FontRenderer fontrenderer = this.getFontRenderer();
         float rot = 0.015625F * 0.6666667F;
@@ -105,7 +133,7 @@ public class TileSignButtonRenderer extends TileEntityRenderer<TileSignButton>
                 if (te.signText[j] != null)
                 {
                     ITextComponent ichatcomponent = te.signText[j];
-                    List<ITextComponent> list = GuiUtilRenderComponents.splitText(ichatcomponent, 90, fontrenderer, false, true);
+                    List<ITextComponent> list = RenderComponentsUtil.splitText(ichatcomponent, 90, fontrenderer, false, true);
                     String s = list != null && list.size() > 0 ? list.get(0).getFormattedText() : "";
 
                     if (j == te.lineBeingEdited)

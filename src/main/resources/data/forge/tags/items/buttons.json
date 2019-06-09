@@ -2,6 +2,11 @@
   "replace": false,
   "values": [
     "#minecraft:buttons",
-    "signbutton:sign_button"
+    "signbutton:acacia_sign_button",
+    "signbutton:birch_sign_button",
+    "signbutton:dark_oak_sign_button",
+    "signbutton:jungle_sign_button",
+    "signbutton:oak_sign_button",
+    "signbutton:spruce_sign_button"
   ]
 }

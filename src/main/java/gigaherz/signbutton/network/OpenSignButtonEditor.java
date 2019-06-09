@@ -1,6 +1,6 @@
 package gigaherz.signbutton.network;
 
-import gigaherz.signbutton.client.ClientEvents;
+import gigaherz.signbutton.client.ClientUtils;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -28,6 +28,6 @@ public class OpenSignButtonEditor
 
     public void handle(Supplier<NetworkEvent.Context> context)
     {
-        ClientEvents.openSignButtonGui(pos);
+        ClientUtils.openSignButtonGui(pos);
     }
 }

@@ -1,0 +1,5 @@
+{
+  "variants":{
+    "": { "model": "signbutton:block/oak_sign_button" }
+  }
+}

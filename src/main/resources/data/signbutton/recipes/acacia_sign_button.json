@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:sign"
+      "item": "minecraft:acacia_sign"
     },
     {
       "item": "minecraft:redstone_torch"
     }
   ],
   "result": {
-    "item": "signbutton:sign_button"
+    "item": "signbutton:acacia_sign_button"
   }
 }

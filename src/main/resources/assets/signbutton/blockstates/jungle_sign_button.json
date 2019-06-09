@@ -1,0 +1,5 @@
+{
+  "variants":{
+    "": { "model": "signbutton:block/jungle_sign_button" }
+  }
+}
