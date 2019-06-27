@@ -30,25 +30,35 @@ public class ModSignButton
 {
     public static final String MODID = "signbutton";
 
-    @ObjectHolder("signbutton")
     public static class Blocks
     {
+        @ObjectHolder("signbutton:acacia_sign_button")
         public static Block ACACIA_SIGN_BUTTON;
+        @ObjectHolder("signbutton:birch_sign_button")
         public static Block BIRCH_SIGN_BUTTON;
+        @ObjectHolder("signbutton:dark_oak_sign_button")
         public static Block DARK_OAK_SIGN_BUTTON;
+        @ObjectHolder("signbutton:jungle_sign_button")
         public static Block JUNGLE_SIGN_BUTTON;
+        @ObjectHolder("signbutton:oak_sign_button")
         public static Block OAK_SIGN_BUTTON;
+        @ObjectHolder("signbutton:spruce_sign_button")
         public static Block SPRUCE_SIGN_BUTTON;
     }
 
-    @ObjectHolder("signbutton")
     public static class Items
     {
+        @ObjectHolder("signbutton:acacia_sign_button")
         public static Item ACACIA_SIGN_BUTTON;
+        @ObjectHolder("signbutton:birch_sign_button")
         public static Item BIRCH_SIGN_BUTTON;
+        @ObjectHolder("signbutton:dark_oak_sign_button")
         public static Item DARK_OAK_SIGN_BUTTON;
+        @ObjectHolder("signbutton:jungle_sign_button")
         public static Item JUNGLE_SIGN_BUTTON;
+        @ObjectHolder("signbutton:oak_sign_button")
         public static Item OAK_SIGN_BUTTON;
+        @ObjectHolder("signbutton:spruce_sign_button")
         public static Item SPRUCE_SIGN_BUTTON;
     }
 
@@ -80,12 +90,12 @@ public class ModSignButton
     public void registerBlocks(RegistryEvent.Register<Block> event)
     {
         event.getRegistry().registerAll(
-                Blocks.ACACIA_SIGN_BUTTON = new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("acacia_sign_button"),
-                Blocks.BIRCH_SIGN_BUTTON = new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("birch_sign_button"),
-                Blocks.DARK_OAK_SIGN_BUTTON = new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("dark_oak_sign_button"),
-                Blocks.JUNGLE_SIGN_BUTTON = new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("jungle_sign_button"),
-                Blocks.OAK_SIGN_BUTTON = new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("oak_sign_button"),
-                Blocks.SPRUCE_SIGN_BUTTON = new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("spruce_sign_button")
+                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("acacia_sign_button"),
+                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("birch_sign_button"),
+                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("dark_oak_sign_button"),
+                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("jungle_sign_button"),
+                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("oak_sign_button"),
+                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("spruce_sign_button")
         );
     }
 
