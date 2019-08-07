@@ -15,9 +15,9 @@ import net.minecraftforge.fml.network.NetworkDirection;
 
 import javax.annotation.Nullable;
 
-public class ItemSignButton extends BlockItem
+public class SignButtonItem extends BlockItem
 {
-    public ItemSignButton(Block block, Properties properties)
+    public SignButtonItem(Block block, Properties properties)
     {
         super(block, properties);
     }
@@ -29,9 +29,9 @@ public class ItemSignButton extends BlockItem
         if (!worldIn.isRemote && !flag && player != null)
         {
             TileEntity te = worldIn.getTileEntity(pos);
-            if (te instanceof TileSignButton)
+            if (te instanceof SignButtonTileEntity)
             {
-                ((TileSignButton) te).setPlayer(player);
+                ((SignButtonTileEntity) te).setPlayer(player);
                 ModSignButton.channel.sendTo(new OpenSignButtonEditor(pos), ((ServerPlayerEntity) player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
             }
         }

@@ -1,25 +1,21 @@
 package gigaherz.signbutton.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import gigaherz.signbutton.button.TileSignButton;
+import gigaherz.signbutton.button.SignButtonTileEntity;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.StandingSignBlock;
-import net.minecraft.block.WallSignBlock;
 import net.minecraft.client.gui.screen.EditSignScreen;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.state.properties.AttachFace;
 import net.minecraft.util.Direction;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import static net.minecraft.state.properties.BlockStateProperties.FACE;
 import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
-public class EditSignButtonScreen extends EditSignScreen
+public class SignButtonEditScreen extends EditSignScreen
 {
-    TileSignButton tileSign;
+    SignButtonTileEntity tileSign;
 
-    public EditSignButtonScreen(TileSignButton teSign)
+    public SignButtonEditScreen(SignButtonTileEntity teSign)
     {
         super(teSign);
         this.tileSign = teSign;

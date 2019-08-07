@@ -1,8 +1,8 @@
 package gigaherz.signbutton;
 
-import gigaherz.signbutton.button.BlockSignButton;
-import gigaherz.signbutton.button.ItemSignButton;
-import gigaherz.signbutton.button.TileSignButton;
+import gigaherz.signbutton.button.SignButtonBlock;
+import gigaherz.signbutton.button.SignButtonItem;
+import gigaherz.signbutton.button.SignButtonTileEntity;
 import gigaherz.signbutton.client.ClientUtils;
 import gigaherz.signbutton.network.OpenSignButtonEditor;
 import net.minecraft.block.Block;
@@ -90,30 +90,30 @@ public class ModSignButton
     public void registerBlocks(RegistryEvent.Register<Block> event)
     {
         event.getRegistry().registerAll(
-                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("acacia_sign_button"),
-                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("birch_sign_button"),
-                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("dark_oak_sign_button"),
-                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("jungle_sign_button"),
-                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("oak_sign_button"),
-                new BlockSignButton(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("spruce_sign_button")
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("acacia_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("birch_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("dark_oak_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("jungle_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("oak_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("spruce_sign_button")
         );
     }
 
     public void registerItems(RegistryEvent.Register<Item> event)
     {
         event.getRegistry().registerAll(
-                new ItemSignButton(Blocks.ACACIA_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("acacia_sign_button"),
-                new ItemSignButton(Blocks.BIRCH_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("birch_sign_button"),
-                new ItemSignButton(Blocks.DARK_OAK_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("dark_oak_sign_button"),
-                new ItemSignButton(Blocks.JUNGLE_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("jungle_sign_button"),
-                new ItemSignButton(Blocks.OAK_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("oak_sign_button"),
-                new ItemSignButton(Blocks.SPRUCE_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("spruce_sign_button")
+                new SignButtonItem(Blocks.ACACIA_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("acacia_sign_button"),
+                new SignButtonItem(Blocks.BIRCH_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("birch_sign_button"),
+                new SignButtonItem(Blocks.DARK_OAK_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("dark_oak_sign_button"),
+                new SignButtonItem(Blocks.JUNGLE_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("jungle_sign_button"),
+                new SignButtonItem(Blocks.OAK_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("oak_sign_button"),
+                new SignButtonItem(Blocks.SPRUCE_SIGN_BUTTON, new Item.Properties().maxStackSize(16).group(ItemGroup.REDSTONE)).setRegistryName("spruce_sign_button")
         );
     }
 
     public void registerTEs(RegistryEvent.Register<TileEntityType<?>> event)
     {
-        event.getRegistry().register(TileEntityType.Builder.create(TileSignButton::new,
+        event.getRegistry().register(TileEntityType.Builder.create(SignButtonTileEntity::new,
                 Blocks.ACACIA_SIGN_BUTTON, Blocks.BIRCH_SIGN_BUTTON, Blocks.DARK_OAK_SIGN_BUTTON,
                 Blocks.JUNGLE_SIGN_BUTTON, Blocks.OAK_SIGN_BUTTON, Blocks.SPRUCE_SIGN_BUTTON).build(null).setRegistryName("sign_button"));
     }

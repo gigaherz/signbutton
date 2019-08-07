@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import gigaherz.signbutton.ModSignButton;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.RenderComponentsUtil;
 import net.minecraft.client.renderer.tileentity.model.SignModel;
@@ -18,7 +17,7 @@ import java.util.List;
 
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
-public class TileSignButtonRenderer extends TileEntityRenderer<TileSignButton>
+public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonTileEntity>
 {
     private static final ResourceLocation acaciaSignTexture = new ResourceLocation("textures/entity/signs/acacia.png");
     private static final ResourceLocation birchSignTexture = new ResourceLocation("textures/entity/signs/birch.png");
@@ -29,7 +28,7 @@ public class TileSignButtonRenderer extends TileEntityRenderer<TileSignButton>
     private static final ResourceLocation signTexture = ModSignButton.location("textures/entity/sign_button.png");
     private final SignModel model = new SignModel();
 
-    public TileSignButtonRenderer()
+    public SignButtonTileEntityRenderer()
     {
         model.getSignStick().isHidden = true;
     }
@@ -45,7 +44,7 @@ public class TileSignButtonRenderer extends TileEntityRenderer<TileSignButton>
     }
 
     @Override
-    public void render(TileSignButton te, double x, double y, double z, float partialTicks, int destroyStage)
+    public void render(SignButtonTileEntity te, double x, double y, double z, float partialTicks, int destroyStage)
     {
         GlStateManager.pushMatrix();
 

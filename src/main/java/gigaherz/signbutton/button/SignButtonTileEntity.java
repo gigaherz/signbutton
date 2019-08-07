@@ -5,12 +5,12 @@ import net.minecraft.tileentity.SignTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class TileSignButton extends SignTileEntity
+public class SignButtonTileEntity extends SignTileEntity
 {
     @ObjectHolder("signbutton:sign_button")
-    public static TileEntityType<TileSignButton> TYPE;
+    public static TileEntityType<SignButtonTileEntity> TYPE;
 
-    public TileSignButton()
+    public SignButtonTileEntity()
     {
         super();
         ModSignButton.logger.warn("TILE CREATED!");

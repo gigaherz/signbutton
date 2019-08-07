@@ -14,7 +14,6 @@ import net.minecraft.fluid.IFluidState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.*;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.AttachFace;
 import net.minecraft.tileentity.TileEntity;
@@ -22,7 +21,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -40,11 +38,11 @@ import java.util.stream.Collectors;
 
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
-public class BlockSignButton extends AbstractSignBlock
+public class SignButtonBlock extends AbstractSignBlock
 {
     private final Map<BlockState, VoxelShape> cache = Maps.newConcurrentMap();
 
-    public BlockSignButton(Properties properties)
+    public SignButtonBlock(Properties properties)
     {
         super(properties);
         this.setDefaultState(this.getStateContainer().getBaseState()
@@ -63,7 +61,7 @@ public class BlockSignButton extends AbstractSignBlock
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn)
     {
-        return new TileSignButton();
+        return new SignButtonTileEntity();
     }
 
     @Override
@@ -221,7 +219,7 @@ public class BlockSignButton extends AbstractSignBlock
         if (!state.get(POWERED))
         {
             worldIn.setBlockState(pos, state.with(POWERED, true));
-            worldIn.markForRerender(pos);
+            //worldIn.markForRerender(pos);
             worldIn.playSound(player, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
             notifyFacing(state, worldIn, pos);
             worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
@@ -314,7 +312,7 @@ public class BlockSignButton extends AbstractSignBlock
             {
                 worldIn.setBlockState(pos, state.with(POWERED, false));
                 notifyFacing(state, worldIn, pos);
-                worldIn.markForRerender(pos);
+                //worldIn.markForRerender(pos);
                 worldIn.playSound(null, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
             }
         }
@@ -338,7 +336,7 @@ public class BlockSignButton extends AbstractSignBlock
         if (arrowsPresent != currentlyPowered)
         {
             worldIn.setBlockState(pos, state.with(POWERED, true));
-            worldIn.markForRerender(pos);
+            //worldIn.markForRerender(pos);
             notifyFacing(state, worldIn, pos);
             worldIn.playSound(null, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
         }
