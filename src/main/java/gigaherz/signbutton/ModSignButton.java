@@ -7,13 +7,16 @@ import gigaherz.signbutton.client.ClientUtils;
 import gigaherz.signbutton.network.OpenSignButtonEditor;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.WoodType;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -79,23 +82,25 @@ public class ModSignButton
     {
         instance = this;
 
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, this::registerBlocks);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, this::registerItems);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(TileEntityType.class, this::registerTEs);
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addGenericListener(Block.class, this::registerBlocks);
+        modEventBus.addGenericListener(Item.class, this::registerItems);
+        modEventBus.addGenericListener(TileEntityType.class, this::registerTEs);
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::lateInitThings);
+        modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::lateInitThings);
+        modEventBus.addListener(this::textureStitchEvent);
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event)
     {
         event.getRegistry().registerAll(
-                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("acacia_sign_button"),
-                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("birch_sign_button"),
-                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("dark_oak_sign_button"),
-                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("jungle_sign_button"),
-                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("oak_sign_button"),
-                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD)).setRegistryName("spruce_sign_button")
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD), WoodType.ACACIA).setRegistryName("acacia_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD), WoodType.BIRCH).setRegistryName("birch_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD), WoodType.DARK_OAK).setRegistryName("dark_oak_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD), WoodType.JUNGLE).setRegistryName("jungle_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD), WoodType.OAK).setRegistryName("oak_sign_button"),
+                new SignButtonBlock(Block.Properties.create(Material.WOOD).doesNotBlockMovement().hardnessAndResistance(0.5F).sound(SoundType.WOOD), WoodType.SPRUCE).setRegistryName("spruce_sign_button")
         );
     }
 
@@ -128,6 +133,11 @@ public class ModSignButton
     public void lateInitThings(FMLLoadCompleteEvent event)
     {
         DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientUtils::registerTESR);
+    }
+
+    public void textureStitchEvent(TextureStitchEvent.Pre event)
+    {
+        ClientUtils.stitchTextures(event);
     }
 
     public static ResourceLocation location(String path)

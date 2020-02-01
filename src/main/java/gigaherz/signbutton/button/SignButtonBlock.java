@@ -3,15 +3,15 @@ package gigaherz.signbutton.button;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gigaherz.signbutton.ModSignButton;
-import net.minecraft.block.AbstractSignBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
-import net.minecraft.block.Blocks;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.StateContainer;
@@ -28,6 +28,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -36,18 +37,20 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import static net.minecraft.state.properties.BlockStateProperties.*;
-
 public class SignButtonBlock extends AbstractSignBlock
 {
+    public static final EnumProperty<AttachFace> FACE = BlockStateProperties.FACE;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    
     private final Map<BlockState, VoxelShape> cache = Maps.newConcurrentMap();
 
-    public SignButtonBlock(Properties properties)
+    public SignButtonBlock(Properties properties, WoodType woodType)
     {
-        super(properties);
+        super(properties, woodType);
         this.setDefaultState(this.getStateContainer().getBaseState()
                 .with(FACE, AttachFace.FLOOR)
-                .with(HORIZONTAL_FACING, Direction.NORTH)
+                .with(FACING, Direction.NORTH)
                 .with(POWERED, false)
                 .with(WATERLOGGED, false));
     }
@@ -55,7 +58,7 @@ public class SignButtonBlock extends AbstractSignBlock
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        builder.add(FACE, HORIZONTAL_FACING, POWERED, WATERLOGGED);
+        builder.add(FACE, FACING, POWERED, WATERLOGGED);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class SignButtonBlock extends AbstractSignBlock
             cached = VoxelShapes.empty();
 
             AttachFace face = state.get(FACE);
-            Direction enumfacing = state.get(HORIZONTAL_FACING);
+            Direction enumfacing = state.get(FACING);
             boolean powered = state.get(POWERED);
 
             // when placed in wall: left/right
@@ -197,7 +200,7 @@ public class SignButtonBlock extends AbstractSignBlock
                 facing = lookDirection.getOpposite();
             }
 
-            state = state.with(FACE, face).with(HORIZONTAL_FACING, facing);
+            state = state.with(FACE, face).with(FACING, facing);
             if (state.isValidPosition(world, pos))
             {
                 return state.with(WATERLOGGED, fluid.getFluid() == Fluids.WATER);
@@ -214,7 +217,7 @@ public class SignButtonBlock extends AbstractSignBlock
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
         if (!state.get(POWERED))
         {
@@ -225,7 +228,7 @@ public class SignButtonBlock extends AbstractSignBlock
             worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
         }
 
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
     private void notifyFacing(BlockState state, World worldIn, BlockPos pos)
@@ -248,7 +251,7 @@ public class SignButtonBlock extends AbstractSignBlock
             case CEILING:
                 return Direction.DOWN;
             default:
-                return state.get(HORIZONTAL_FACING);
+                return state.get(FACING);
         }
     }
 
@@ -298,13 +301,13 @@ public class SignButtonBlock extends AbstractSignBlock
 
     @Deprecated
     @Override
-    public void randomTick(BlockState state, World worldIn, BlockPos pos, Random random)
+    public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random)
     {
     }
 
     @Deprecated
     @Override
-    public void tick(BlockState state, World worldIn, BlockPos pos, Random random)
+    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand)
     {
         if (!worldIn.isRemote)
         {

@@ -1,13 +1,18 @@
 package gigaherz.signbutton.button;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import gigaherz.signbutton.ModSignButton;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.block.*;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.RenderComponentsUtil;
-import net.minecraft.client.renderer.tileentity.model.SignModel;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.model.Material;
+import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.renderer.tileentity.SignTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.state.properties.AttachFace;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -15,48 +20,31 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static net.minecraft.state.properties.BlockStateProperties.*;
-
 public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonTileEntity>
 {
-    private static final ResourceLocation acaciaSignTexture = new ResourceLocation("textures/entity/signs/acacia.png");
-    private static final ResourceLocation birchSignTexture = new ResourceLocation("textures/entity/signs/birch.png");
-    private static final ResourceLocation dark_oakSignTexture = new ResourceLocation("textures/entity/signs/dark_oak.png");
-    private static final ResourceLocation jungleSignTexture = new ResourceLocation("textures/entity/signs/jungle.png");
-    private static final ResourceLocation oakSignTexture = new ResourceLocation("textures/entity/signs/oak.png");
-    private static final ResourceLocation spruceSignTexture = new ResourceLocation("textures/entity/signs/spruce.png");
-    private static final ResourceLocation signTexture = ModSignButton.location("textures/entity/sign_button.png");
-    private final SignModel model = new SignModel();
+    public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Atlases.SIGN_ATLAS, new ResourceLocation("signbutton", "entity/sign_button"));
 
-    public SignButtonTileEntityRenderer()
-    {
-        model.getSignStick().isHidden = true;
-    }
+    private final SignTileEntityRenderer.SignModel model = new SignTileEntityRenderer.SignModel();
 
-    public ResourceLocation getSignTexture(Block block)
+    public SignButtonTileEntityRenderer(TileEntityRendererDispatcher rendererDispatcherIn)
     {
-        if (block == ModSignButton.Blocks.ACACIA_SIGN_BUTTON) return acaciaSignTexture;
-        if (block == ModSignButton.Blocks.BIRCH_SIGN_BUTTON) return birchSignTexture;
-        if (block == ModSignButton.Blocks.DARK_OAK_SIGN_BUTTON) return dark_oakSignTexture;
-        if (block == ModSignButton.Blocks.JUNGLE_SIGN_BUTTON) return jungleSignTexture;
-        if (block == ModSignButton.Blocks.SPRUCE_SIGN_BUTTON) return spruceSignTexture;
-        return oakSignTexture;
+        super(rendererDispatcherIn);
     }
 
     @Override
-    public void render(SignButtonTileEntity te, double x, double y, double z, float partialTicks, int destroyStage)
+    public void render(SignButtonTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn)
     {
-        GlStateManager.pushMatrix();
+        final float scale = 0.6666667F;
 
-        BlockState state = te.getBlockState();
+        matrixStackIn.push();
 
-        boolean powered = state.get(POWERED);
-        Direction facing = state.get(HORIZONTAL_FACING);
-        AttachFace face = state.get(FACE);
+        BlockState blockstate = tileEntityIn.getBlockState();
 
-        int rotAroundY = 0;
+        boolean powered = blockstate.get(SignButtonBlock.POWERED);
+        Direction facing = blockstate.get(SignButtonBlock.FACING);
+        AttachFace face = blockstate.get(SignButtonBlock.FACE);
+
         int rotAroundX = 0;
-
         switch (face)
         {
             case CEILING:
@@ -67,6 +55,7 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
                 break;
         }
 
+        int rotAroundY = 0;
         switch (facing)
         {
             case SOUTH:
@@ -82,77 +71,73 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
                 break;
         }
 
-        GlStateManager.translatef((float) x + 0.5F, (float) y + 0.75F * 2.0f / 3.0f, (float) z + 0.5F);
-        GlStateManager.rotatef(rotAroundY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotatef(rotAroundX, 1.0F, 0.0F, 0.0F);
-        GlStateManager.translatef(0.0F, -0.3125F, -0.4375F - (powered ? 0.035F : 0));
+        matrixStackIn.translate(0.5, 0.5, 0.5);
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rotAroundY));
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(rotAroundX));
+        matrixStackIn.translate(0.0, -0.3125, -0.4375D - (powered ? 0.035 : 0));
+        this.model.signStick.showModel = false;
 
-        if (destroyStage >= 0)
+        matrixStackIn.push();
+        matrixStackIn.scale(scale, -scale, -scale);
         {
-            this.bindTexture(DESTROY_STAGES[destroyStage]);
-            GlStateManager.matrixMode(5890);
-            GlStateManager.pushMatrix();
-            GlStateManager.scalef(4.0F, 2.0F, 1.0F);
-            GlStateManager.translatef(0.0625F, 0.0625F, 0.0625F);
-            GlStateManager.matrixMode(5888);
+            Material material = SignTileEntityRenderer.getMaterial(blockstate.getBlock());
+            IVertexBuilder ivertexbuilder = material.getBuffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
+            this.model.signBoard.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+            this.model.signStick.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
-        else
         {
-            this.bindTexture(getSignTexture(te.getBlockState().getBlock()));
+            IVertexBuilder ivertexbuilder = SIGN_BUTTON_OVERLAY_MATERIAL.getBuffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
+            this.model.signBoard.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+            this.model.signStick.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
+        matrixStackIn.pop();
+        FontRenderer fontrenderer = this.renderDispatcher.getFontRenderer();
+        matrixStackIn.translate(0.0D, (double) 0.33333334F, (double) 0.046666667F);
+        matrixStackIn.scale(0.010416667F, -0.010416667F, 0.010416667F);
 
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(0.6666667F, -0.6666667F, -0.6666667F);
-        this.model.renderSign();
+        int color = tileEntityIn.getTextColor().getTextColor();
+        int red = (int) ((double) NativeImage.getRed(color) * 0.4D);
+        int green = (int) ((double) NativeImage.getGreen(color) * 0.4D);
+        int blue = (int) ((double) NativeImage.getBlue(color) * 0.4D);
+        int adjustedColor = NativeImage.getCombined(0, blue, green, red);
 
-        if (destroyStage < 0)
+        for (int j1 = 0; j1 < 4; ++j1)
         {
-            GlStateManager.enableBlend();
-            GlStateManager.color4f(1,1,1,1);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            this.bindTexture(signTexture);
-            this.model.renderSign();
-            GlStateManager.disableBlend();
-        }
-
-        GlStateManager.popMatrix();
-        FontRenderer fontrenderer = this.getFontRenderer();
-        float rot = 0.015625F * 0.6666667F;
-        GlStateManager.translatef(0.0F, 0.5F * 0.6666667F, 0.07F * 0.6666667F);
-        GlStateManager.scalef(rot, -rot, rot);
-        GlStateManager.normal3f(0.0F, 0.0F, -1.0F * rot);
-        GlStateManager.depthMask(false);
-        byte b0 = 0;
-
-        if (destroyStage < 0)
-        {
-            for (int j = 0; j < te.signText.length; ++j)
+            String s = tileEntityIn.getRenderText(j1, (p_212491_1_) -> {
+                List<ITextComponent> list = RenderComponentsUtil.splitText(p_212491_1_, 90, fontrenderer, false, true);
+                return list.isEmpty() ? "" : list.get(0).getFormattedText();
+            });
+            if (s != null)
             {
-                if (te.signText[j] != null)
-                {
-                    ITextComponent ichatcomponent = te.signText[j];
-                    List<ITextComponent> list = RenderComponentsUtil.splitText(ichatcomponent, 90, fontrenderer, false, true);
-                    String s = list != null && list.size() > 0 ? list.get(0).getFormattedText() : "";
-
-                    if (j == te.lineBeingEdited)
-                    {
-                        s = "> " + s + " <";
-                    }
-                    fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, b0);
-                }
+                float f3 = (float) (-fontrenderer.getStringWidth(s) / 2);
+                fontrenderer.renderString(s, f3, (float) (j1 * 10 - tileEntityIn.signText.length * 5), adjustedColor, false, matrixStackIn.getLast().getPositionMatrix(), bufferIn, false, 0, combinedLightIn);
             }
         }
 
-        GlStateManager.depthMask(true);
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.popMatrix();
+        matrixStackIn.pop();
+    }
 
-        if (destroyStage >= 0)
+    private static class ButtonRenderTypes extends RenderType
+    {
+        private ButtonRenderTypes(String p_i225992_1_, VertexFormat p_i225992_2_, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable p_i225992_7_, Runnable p_i225992_8_)
         {
-            GlStateManager.matrixMode(5890);
-            GlStateManager.popMatrix();
-            GlStateManager.matrixMode(5888);
+            super(p_i225992_1_, p_i225992_2_, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, p_i225992_7_, p_i225992_8_);
+        }
+
+        public static RenderType entityTranslucentUnsorted(ResourceLocation texture, boolean doOverlay) {
+            RenderType.State rendertype$state = RenderType.State.builder()
+                    .texture(new RenderState.TextureState(texture, false, false))
+                    .transparency(TRANSLUCENT_TRANSPARENCY)
+                    .diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
+                    .alpha(DEFAULT_ALPHA).cull(CULL_DISABLED)
+                    .lightmap(LIGHTMAP_ENABLED)
+                    .overlay(OVERLAY_ENABLED)
+                    .build(doOverlay);
+            return get("entity_translucent_unsorted", DefaultVertexFormats.ITEM, 7, 256, true, false/*no sorting*/, rendertype$state);
+        }
+
+        public static RenderType entityTranslucentUnsorted(ResourceLocation texture) {
+            return entityTranslucentUnsorted(texture, true);
         }
     }
 }
