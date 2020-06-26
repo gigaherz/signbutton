@@ -69,7 +69,7 @@ public class ModSignButton
 
     public static final Logger logger = LogManager.getLogger(MODID);
 
-    public static final String CHANNEL = MODID;
+    public static final String CHANNEL = "main";
     private static final String PROTOCOL_VERSION = "1.0";
     public static SimpleChannel channel = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(MODID, CHANNEL))

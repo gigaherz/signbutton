@@ -27,7 +27,7 @@ compileJava {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200131-1.15.1'
+    mappings channel: 'snapshot', version: '20200506-1.15.1'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -35,29 +35,48 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
-            property 'forge.logging.markers', 'CONFIG'
+            property 'forge.logging.markers', ''
             property 'forge.logging.console.level', 'debug'
 
-            ideaModule "${project.name}.main"
-
-            environment 'MOD_CLASSES', "${project.file("out/production/resources").canonicalPath};${project.file("out/production/classes").canonicalPath}"
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
         }
 
         server {
             workingDirectory project.file('run')
 
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', ''
             property 'forge.logging.console.level', 'debug'
 
-            ideaModule "${project.name}.main"
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
 
-            environment 'MOD_CLASSES', "${project.file("out/production/resources").canonicalPath};${project.file("out/production/classes").canonicalPath}"
+        data {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', ''
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'hudcompass', '--all', '--output', file('src/main/generated_resources/'), '--existing', file('src/main/resources/')
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.2-31.0.14'
+    minecraft 'net.minecraftforge:forge:1.15.2-31.1.75'
 }
 
 jar {

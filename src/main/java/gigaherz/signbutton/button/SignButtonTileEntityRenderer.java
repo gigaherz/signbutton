@@ -2,6 +2,8 @@ package gigaherz.signbutton.button;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import net.minecraft.block.*;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.RenderComponentsUtil;
@@ -18,7 +20,10 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonTileEntity>
 {
@@ -110,7 +115,7 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
             if (s != null)
             {
                 float f3 = (float) (-fontrenderer.getStringWidth(s) / 2);
-                fontrenderer.renderString(s, f3, (float) (j1 * 10 - tileEntityIn.signText.length * 5), adjustedColor, false, matrixStackIn.getLast().getPositionMatrix(), bufferIn, false, 0, combinedLightIn);
+                fontrenderer.renderString(s, f3, (float) (j1 * 10 - tileEntityIn.signText.length * 5), adjustedColor, false, matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, combinedLightIn);
             }
         }
 
@@ -119,13 +124,13 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
 
     private static class ButtonRenderTypes extends RenderType
     {
-        private ButtonRenderTypes(String p_i225992_1_, VertexFormat p_i225992_2_, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable p_i225992_7_, Runnable p_i225992_8_)
+        private ButtonRenderTypes(String name, VertexFormat fmt, int glMode, int bufferSize, boolean useDelegate, boolean useSorting, Runnable setupRendering, Runnable cleanupRendering)
         {
-            super(p_i225992_1_, p_i225992_2_, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, p_i225992_7_, p_i225992_8_);
+            super(name, fmt, glMode, bufferSize, useDelegate, useSorting, setupRendering, cleanupRendering);
         }
 
         public static RenderType entityTranslucentUnsorted(ResourceLocation texture, boolean doOverlay) {
-            RenderType.State rendertype$state = RenderType.State.builder()
+            RenderType.State rendertype$state = RenderType.State.getBuilder()
                     .texture(new RenderState.TextureState(texture, false, false))
                     .transparency(TRANSLUCENT_TRANSPARENCY)
                     .diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
@@ -133,7 +138,7 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
                     .lightmap(LIGHTMAP_ENABLED)
                     .overlay(OVERLAY_ENABLED)
                     .build(doOverlay);
-            return get("entity_translucent_unsorted", DefaultVertexFormats.ITEM, 7, 256, true, false/*no sorting*/, rendertype$state);
+            return makeType("entity_translucent_unsorted", DefaultVertexFormats.ENTITY, 7, 256, true, false/*no sorting*/, rendertype$state);
         }
 
         public static RenderType entityTranslucentUnsorted(ResourceLocation texture) {

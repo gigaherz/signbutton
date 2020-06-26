@@ -108,7 +108,7 @@ public class SignButtonEditScreen extends EditSignScreen
         IRenderTypeBuffer.Impl irendertypebuffer$impl = this.minecraft.getRenderTypeBuffers().getBufferSource();
         Material material = SignTileEntityRenderer.getMaterial(blockstate.getBlock());
         IVertexBuilder ivertexbuilder = material.getBuffer(irendertypebuffer$impl, this.field_228191_a_::getRenderType);
-        this.field_228191_a_.signBoard.render(matrixstack, ivertexbuilder, 15728880, OverlayTexture.DEFAULT_LIGHT);
+        this.field_228191_a_.signBoard.render(matrixstack, ivertexbuilder, 15728880, OverlayTexture.NO_OVERLAY);
 
         matrixstack.pop();
         float f2 = 0.010416667F;
@@ -124,7 +124,7 @@ public class SignButtonEditScreen extends EditSignScreen
             });
         }
 
-        Matrix4f matrix4f = matrixstack.getLast().getPositionMatrix();
+        Matrix4f matrix4f = matrixstack.getLast().getMatrix();
         int k = this.textInputUtil.func_216896_c();
         int l = this.textInputUtil.func_216898_d();
         int i1 = this.minecraft.fontRenderer.getBidiFlag() ? -1 : 1;

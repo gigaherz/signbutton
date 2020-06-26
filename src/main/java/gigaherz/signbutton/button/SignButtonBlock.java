@@ -216,6 +216,19 @@ public class SignButtonBlock extends AbstractSignBlock
         return world.getBlockState(pos.offset(getEffectiveFacing(state).getOpposite())).getMaterial().isSolid();
     }
 
+    private Direction getEffectiveFacing(BlockState state)
+    {
+        switch (state.get(FACE))
+        {
+            case FLOOR:
+                return Direction.UP;
+            case CEILING:
+                return Direction.DOWN;
+            default:
+                return state.get(FACING);
+        }
+    }
+
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
@@ -242,17 +255,25 @@ public class SignButtonBlock extends AbstractSignBlock
         worldIn.notifyNeighborsOfStateChange(pos.offset(facing), this);
     }
 
-    private Direction getEffectiveFacing(BlockState state)
+    @Deprecated
+    @Override
+    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side)
     {
-        switch (state.get(FACE))
-        {
-            case FLOOR:
-                return Direction.UP;
-            case CEILING:
-                return Direction.DOWN;
-            default:
-                return state.get(FACING);
-        }
+        return blockState.get(POWERED) ? 15 : 0;
+    }
+
+    @Deprecated
+    @Override
+    public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side)
+    {
+        return blockState.get(POWERED) && getEffectiveFacing(blockState) == side ? 15 : 0;
+    }
+
+    @Deprecated
+    @Override
+    public boolean canProvidePower(BlockState state)
+    {
+        return true;
     }
 
     @Override
@@ -276,27 +297,6 @@ public class SignButtonBlock extends AbstractSignBlock
 
             super.onReplaced(state, worldIn, pos, newState, isMoving);
         }
-    }
-
-    @Deprecated
-    @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side)
-    {
-        return blockState.get(POWERED) ? 15 : 0;
-    }
-
-    @Deprecated
-    @Override
-    public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side)
-    {
-        return blockState.get(POWERED) && getEffectiveFacing(blockState) == side ? 15 : 0;
-    }
-
-    @Deprecated
-    @Override
-    public boolean canProvidePower(BlockState state)
-    {
-        return true;
     }
 
     @Deprecated

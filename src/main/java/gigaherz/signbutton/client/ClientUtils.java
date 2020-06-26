@@ -33,7 +33,7 @@ public class ClientUtils
 
     public static void stitchTextures(TextureStitchEvent.Pre event)
     {
-        if (event.getMap().getBasePath().equals(Atlases.SIGN_ATLAS))
+        if (event.getMap().getTextureLocation().equals(Atlases.SIGN_ATLAS))
         {
             event.addSprite(new ResourceLocation("signbutton", "entity/sign_button"));
         }
