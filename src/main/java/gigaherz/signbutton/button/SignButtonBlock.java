@@ -7,8 +7,8 @@ import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -42,7 +42,8 @@ public class SignButtonBlock extends AbstractSignBlock
     public static final EnumProperty<AttachFace> FACE = BlockStateProperties.FACE;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-    
+    public static final int TICK_RATE = 30;
+
     private final Map<BlockState, VoxelShape> cache = Maps.newConcurrentMap();
 
     public SignButtonBlock(Properties properties, WoodType woodType)
@@ -65,12 +66,6 @@ public class SignButtonBlock extends AbstractSignBlock
     public TileEntity createNewTileEntity(IBlockReader worldIn)
     {
         return new SignButtonTileEntity();
-    }
-
-    @Override
-    public int tickRate(IWorldReader worldIn)
-    {
-        return 30;
     }
 
     @Override
@@ -167,7 +162,7 @@ public class SignButtonBlock extends AbstractSignBlock
     public BlockState getStateForPlacement(BlockItemUseContext context)
     {
         BlockState state = this.getDefaultState();
-        IFluidState fluid = context.getWorld().getFluidState(context.getPos());
+        FluidState fluid = context.getWorld().getFluidState(context.getPos());
         IWorldReader world = context.getWorld();
         BlockPos pos = context.getPos();
 
@@ -238,7 +233,7 @@ public class SignButtonBlock extends AbstractSignBlock
             //worldIn.markForRerender(pos);
             worldIn.playSound(player, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
             notifyFacing(state, worldIn, pos);
-            worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
+            worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, TICK_RATE);
         }
 
         return ActionResultType.SUCCESS;
@@ -346,7 +341,7 @@ public class SignButtonBlock extends AbstractSignBlock
 
         if (arrowsPresent)
         {
-            worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
+            worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, TICK_RATE);
         }
     }
 }

@@ -2,13 +2,11 @@ package gigaherz.signbutton.button;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import it.unimi.dsi.fastutil.Hash;
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import net.minecraft.block.*;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.RenderComponentsUtil;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.model.Material;
+import net.minecraft.client.renderer.model.RenderMaterial;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.tileentity.SignTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -18,16 +16,16 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.state.properties.AttachFace;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.Style;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonTileEntity>
 {
-    public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Atlases.SIGN_ATLAS, new ResourceLocation("signbutton", "entity/sign_button"));
+    public static final RenderMaterial SIGN_BUTTON_OVERLAY_MATERIAL = new RenderMaterial(Atlases.SIGN_ATLAS, new ResourceLocation("signbutton", "entity/sign_button"));
 
     private final SignTileEntityRenderer.SignModel model = new SignTileEntityRenderer.SignModel();
 
@@ -85,7 +83,7 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
         matrixStackIn.push();
         matrixStackIn.scale(scale, -scale, -scale);
         {
-            Material material = SignTileEntityRenderer.getMaterial(blockstate.getBlock());
+            RenderMaterial material = SignTileEntityRenderer.getMaterial(blockstate.getBlock());
             IVertexBuilder ivertexbuilder = material.getBuffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
             this.model.signBoard.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
             this.model.signStick.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
@@ -108,14 +106,13 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
 
         for (int j1 = 0; j1 < 4; ++j1)
         {
-            String s = tileEntityIn.getRenderText(j1, (p_212491_1_) -> {
-                List<ITextComponent> list = RenderComponentsUtil.splitText(p_212491_1_, 90, fontrenderer, false, true);
-                return list.isEmpty() ? "" : list.get(0).getFormattedText();
+            ITextProperties itextproperties = tileEntityIn.func_235677_a_(j1, (p_212491_1_) -> {
+                List<ITextProperties> list = fontrenderer.func_238420_b_().func_238362_b_(p_212491_1_, 90, Style.field_240709_b_);
+                return list.isEmpty() ? ITextProperties.field_240651_c_ : list.get(0);
             });
-            if (s != null)
-            {
-                float f3 = (float) (-fontrenderer.getStringWidth(s) / 2);
-                fontrenderer.renderString(s, f3, (float) (j1 * 10 - tileEntityIn.signText.length * 5), adjustedColor, false, matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, combinedLightIn);
+            if (itextproperties != null) {
+                float f3 = (float)(-fontrenderer.func_238414_a_(itextproperties) / 2);
+                fontrenderer.func_238416_a_(itextproperties, f3, (float)(j1 * 10 - 20), adjustedColor, false, matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, combinedLightIn);
             }
         }
 
