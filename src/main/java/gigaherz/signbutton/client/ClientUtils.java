@@ -10,7 +10,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class ClientUtils
 {
-    public static void registerTESR()
+    public static void setupClient()
     {
         ClientRegistry.bindTileEntitySpecialRenderer(SignButtonTileEntity.class, new SignButtonTileEntityRenderer());
     }

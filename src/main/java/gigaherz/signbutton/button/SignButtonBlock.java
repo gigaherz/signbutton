@@ -12,6 +12,9 @@ import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.block.Blocks;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.*;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.StateContainer;
@@ -36,10 +39,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import static net.minecraft.state.properties.BlockStateProperties.*;
-
 public class SignButtonBlock extends AbstractSignBlock
 {
+    public static final EnumProperty<AttachFace> FACE = BlockStateProperties.FACE;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+
     private final Map<BlockState, VoxelShape> cache = Maps.newConcurrentMap();
 
     public SignButtonBlock(Properties properties)
@@ -47,7 +52,7 @@ public class SignButtonBlock extends AbstractSignBlock
         super(properties);
         this.setDefaultState(this.getStateContainer().getBaseState()
                 .with(FACE, AttachFace.FLOOR)
-                .with(HORIZONTAL_FACING, Direction.NORTH)
+                .with(FACING, Direction.NORTH)
                 .with(POWERED, false)
                 .with(WATERLOGGED, false));
     }
@@ -55,7 +60,7 @@ public class SignButtonBlock extends AbstractSignBlock
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        builder.add(FACE, HORIZONTAL_FACING, POWERED, WATERLOGGED);
+        builder.add(FACE, FACING, POWERED, WATERLOGGED);
     }
 
     @Override
@@ -80,7 +85,7 @@ public class SignButtonBlock extends AbstractSignBlock
             cached = VoxelShapes.empty();
 
             AttachFace face = state.get(FACE);
-            Direction enumfacing = state.get(HORIZONTAL_FACING);
+            Direction enumfacing = state.get(FACING);
             boolean powered = state.get(POWERED);
 
             // when placed in wall: left/right
@@ -197,7 +202,7 @@ public class SignButtonBlock extends AbstractSignBlock
                 facing = lookDirection.getOpposite();
             }
 
-            state = state.with(FACE, face).with(HORIZONTAL_FACING, facing);
+            state = state.with(FACE, face).with(FACING, facing);
             if (state.isValidPosition(world, pos))
             {
                 return state.with(WATERLOGGED, fluid.getFluid() == Fluids.WATER);
@@ -213,9 +218,25 @@ public class SignButtonBlock extends AbstractSignBlock
         return world.getBlockState(pos.offset(getEffectiveFacing(state).getOpposite())).getMaterial().isSolid();
     }
 
+    private Direction getEffectiveFacing(BlockState state)
+    {
+        switch (state.get(FACE))
+        {
+            case FLOOR:
+                return Direction.UP;
+            case CEILING:
+                return Direction.DOWN;
+            default:
+                return state.get(FACING);
+        }
+    }
+
     @Override
     public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
+        if (hit.getFace() != state.get(FACING))
+            return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+
         if (!state.get(POWERED))
         {
             worldIn.setBlockState(pos, state.with(POWERED, true));
@@ -239,42 +260,6 @@ public class SignButtonBlock extends AbstractSignBlock
         worldIn.notifyNeighborsOfStateChange(pos.offset(facing), this);
     }
 
-    private Direction getEffectiveFacing(BlockState state)
-    {
-        switch (state.get(FACE))
-        {
-            case FLOOR:
-                return Direction.UP;
-            case CEILING:
-                return Direction.DOWN;
-            default:
-                return state.get(HORIZONTAL_FACING);
-        }
-    }
-
-    @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
-    {
-        return facing.getOpposite() == getEffectiveFacing(stateIn) && !stateIn.isValidPosition(worldIn, currentPos)
-                ? Blocks.AIR.getDefaultState()
-                : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
-    }
-
-
-    @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
-    {
-        if (!isMoving && state.getBlock() != newState.getBlock())
-        {
-            if (state.get(POWERED))
-            {
-                notifyFacing(state, worldIn, pos);
-            }
-
-            super.onReplaced(state, worldIn, pos, newState, isMoving);
-        }
-    }
-
     @Deprecated
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side)
@@ -294,6 +279,29 @@ public class SignButtonBlock extends AbstractSignBlock
     public boolean canProvidePower(BlockState state)
     {
         return true;
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
+    {
+        return facing.getOpposite() == getEffectiveFacing(stateIn) && !stateIn.isValidPosition(worldIn, currentPos)
+                ? Blocks.AIR.getDefaultState()
+                : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    }
+
+    @Deprecated
+    @Override
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
+    {
+        if (!isMoving && state.getBlock() != newState.getBlock())
+        {
+            if (state.get(POWERED))
+            {
+                notifyFacing(state, worldIn, pos);
+            }
+
+            super.onReplaced(state, worldIn, pos, newState, isMoving);
+        }
     }
 
     @Deprecated

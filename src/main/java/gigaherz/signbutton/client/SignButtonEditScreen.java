@@ -89,7 +89,7 @@ public class SignButtonEditScreen extends EditSignScreen
             this.tileSign.lineBeingEdited = this.editLine;
         }
 
-        this.tileSign.func_214062_a(this.editLine, this.field_214267_d.func_216896_c(), this.field_214267_d.func_216898_d(), this.updateCounter / 6 % 2 == 0);
+        this.tileSign.func_214062_a(this.editLine, this.textInputUtil.func_216896_c(), this.textInputUtil.func_216898_d(), this.updateCounter / 6 % 2 == 0);
         TileEntityRendererDispatcher.instance.render(this.tileSign, -0.5D, -0.75D, -0.5D, 0.0F);
         this.tileSign.func_214063_g();
 

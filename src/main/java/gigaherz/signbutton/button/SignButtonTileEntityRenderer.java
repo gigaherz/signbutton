@@ -50,9 +50,9 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
 
         BlockState state = te.getBlockState();
 
-        boolean powered = state.get(POWERED);
-        Direction facing = state.get(HORIZONTAL_FACING);
-        AttachFace face = state.get(FACE);
+        boolean powered = state.get(SignButtonBlock.POWERED);
+        Direction facing = state.get(SignButtonBlock.FACING);
+        AttachFace face = state.get(SignButtonBlock.FACE);
 
         int rotAroundY = 0;
         int rotAroundX = 0;
@@ -123,7 +123,8 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
         GlStateManager.scalef(rot, -rot, rot);
         GlStateManager.normal3f(0.0F, 0.0F, -1.0F * rot);
         GlStateManager.depthMask(false);
-        byte b0 = 0;
+
+        int color = te.getTextColor().getTextColor();
 
         if (destroyStage < 0)
         {
@@ -139,7 +140,7 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
                     {
                         s = "> " + s + " <";
                     }
-                    fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, b0);
+                    fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, color);
                 }
             }
         }

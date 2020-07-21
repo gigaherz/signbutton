@@ -14,8 +14,10 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -79,12 +81,13 @@ public class ModSignButton
     {
         instance = this;
 
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, this::registerBlocks);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, this::registerItems);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(TileEntityType.class, this::registerTEs);
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addGenericListener(Block.class, this::registerBlocks);
+        modEventBus.addGenericListener(Item.class, this::registerItems);
+        modEventBus.addGenericListener(TileEntityType.class, this::registerTEs);
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::lateInitThings);
+        modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::clientSetup);
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event)
@@ -125,9 +128,9 @@ public class ModSignButton
         logger.debug("Final message number: " + messageNumber);
     }
 
-    public void lateInitThings(FMLLoadCompleteEvent event)
+    public void clientSetup(FMLClientSetupEvent event)
     {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientUtils::registerTESR);
+        ClientUtils.setupClient();
     }
 
     public static ResourceLocation location(String path)
