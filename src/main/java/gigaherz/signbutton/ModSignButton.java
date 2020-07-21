@@ -14,13 +14,12 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -88,8 +87,9 @@ public class ModSignButton
         modEventBus.addGenericListener(TileEntityType.class, this::registerTEs);
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::lateInitThings);
-        modEventBus.addListener(this::textureStitchEvent);
+        modEventBus.addListener(this::clientSetup);
+
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientUtils::initClient);
     }
 
     public void registerBlocks(RegistryEvent.Register<Block> event)
@@ -130,14 +130,9 @@ public class ModSignButton
         logger.debug("Final message number: " + messageNumber);
     }
 
-    public void lateInitThings(FMLLoadCompleteEvent event)
+    public void clientSetup(FMLClientSetupEvent event)
     {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientUtils::registerTESR);
-    }
-
-    public void textureStitchEvent(TextureStitchEvent.Pre event)
-    {
-        ClientUtils.stitchTextures(event);
+        ClientUtils.setupClient();
     }
 
     public static ResourceLocation location(String path)

@@ -9,6 +9,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.DyeItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -40,7 +42,7 @@ import java.util.stream.Collectors;
 public class SignButtonBlock extends AbstractSignBlock
 {
     public static final EnumProperty<AttachFace> FACE = BlockStateProperties.FACE;
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final int TICK_RATE = 30;
 
@@ -227,6 +229,9 @@ public class SignButtonBlock extends AbstractSignBlock
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
+        if (hit.getFace() != state.get(FACING))
+            return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+
         if (!state.get(POWERED))
         {
             worldIn.setBlockState(pos, state.with(POWERED, true));
@@ -279,7 +284,7 @@ public class SignButtonBlock extends AbstractSignBlock
                 : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
-
+    @Deprecated
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
