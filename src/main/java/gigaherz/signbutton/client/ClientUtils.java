@@ -9,11 +9,19 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class ClientUtils
 {
-    public static void registerTESR()
+    public static void initClient()
+    {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientUtils::stitchTextures);
+    }
+
+    public static void setupClient()
     {
         ClientRegistry.bindTileEntityRenderer(SignButtonTileEntity.TYPE, SignButtonTileEntityRenderer::new);
     }

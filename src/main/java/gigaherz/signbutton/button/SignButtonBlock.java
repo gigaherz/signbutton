@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 public class SignButtonBlock extends AbstractSignBlock
 {
     public static final EnumProperty<AttachFace> FACE = BlockStateProperties.FACE;
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     
     private final Map<BlockState, VoxelShape> cache = Maps.newConcurrentMap();
@@ -232,6 +232,9 @@ public class SignButtonBlock extends AbstractSignBlock
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
+        if (hit.getFace() != state.get(FACING))
+            return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+
         if (!state.get(POWERED))
         {
             worldIn.setBlockState(pos, state.with(POWERED, true));
@@ -284,7 +287,7 @@ public class SignButtonBlock extends AbstractSignBlock
                 : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
-
+    @Deprecated
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {

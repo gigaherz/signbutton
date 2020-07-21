@@ -44,53 +44,6 @@ public class SignButtonEditScreen extends EditSignScreen
     @Override
     public void render(int mouseX, int mouseY, float partialTicks)
     {
-/*
-        BlockState state = this.tileSign.getBlockState();
-        Direction facing = state.get(HORIZONTAL_FACING);
-        AttachFace face = state.get(FACE);
-
-        switch (face)
-        {
-            case CEILING:
-                RenderSystem.rotatef(-90, 1.0F, 0.0F, 0.0F);
-                break;
-            case FLOOR:
-                RenderSystem.rotatef(90, 1.0F, 0.0F, 0.0F);
-                break;
-            default:
-                break;
-        }
-
-        switch (face)
-        {
-            case CEILING:
-                RenderSystem.translated(0, -0.5, -1.3125F);
-                break;
-            case FLOOR:
-                RenderSystem.translated(0, 0.5, 1.3125F);
-                break;
-            default:
-                RenderSystem.translated(0, -1.0625F, 0);
-                break;
-        }
-
-        switch (facing)
-        {
-            case SOUTH:
-                break;
-            case NORTH:
-                RenderSystem.rotatef(180, 0.0F, 1.0F, 0.0F);
-                break;
-            case EAST:
-                RenderSystem.rotatef(-90, 0.0F, 1.0F, 0.0F);
-                break;
-            case WEST:
-                RenderSystem.rotatef(90, 0.0F, 1.0F, 0.0F);
-                break;
-        }
-
- */
-
         RenderHelper.setupGuiFlatDiffuseLighting();
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 16777215);
