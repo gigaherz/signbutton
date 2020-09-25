@@ -21,6 +21,8 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.item.Item.Properties;
+
 public class SignButtonItem extends BlockItem
 {
     public SignButtonItem(Block block, Properties properties)

@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class SignButtonBlock extends AbstractSignBlock
 {
     public static final EnumProperty<AttachFace> FACE = BlockStateProperties.FACE;

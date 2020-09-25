@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.state.properties.AttachFace;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextProperties;
@@ -107,13 +108,13 @@ public class SignButtonTileEntityRenderer extends TileEntityRenderer<SignButtonT
 
         for (int line = 0; line < 4; ++line)
         {
-            ITextProperties itextproperties = tileEntityIn.func_235677_a_(line, (text) -> {
-                List<ITextProperties> list = fontrenderer.func_238420_b_().func_238362_b_(text, 90, Style.EMPTY);
-                return list.isEmpty() ? ITextProperties.field_240651_c_ : list.get(0);
+            IReorderingProcessor ireorderingprocessor = tileEntityIn.func_242686_a(line, (text) -> {
+                List<IReorderingProcessor> list = fontrenderer.trimStringToWidth(text, 90);
+                return list.isEmpty() ? IReorderingProcessor.field_242232_a : list.get(0);
             });
-            if (itextproperties != null) {
-                float f3 = (float)(-fontrenderer.func_238414_a_(itextproperties) / 2);
-                fontrenderer.func_238416_a_(itextproperties, f3, (float)(line * 10 - 20), adjustedColor, false, matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, combinedLightIn);
+            if (ireorderingprocessor != null) {
+                float f3 = (float)(-fontrenderer.func_243245_a(ireorderingprocessor) / 2);
+                fontrenderer.func_238416_a_(ireorderingprocessor, f3, (float)(line * 10 - 20), adjustedColor, false, matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, combinedLightIn);
             }
         }
 
