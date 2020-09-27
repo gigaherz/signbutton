@@ -231,8 +231,21 @@ public class SignButtonBlock extends AbstractSignBlock
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        if (hit.getFace() != state.get(FACING))
-            return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+        switch(state.get(FACE))
+        {
+            case WALL:
+                if (hit.getFace() != state.get(FACING))
+                    return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+                break;
+            case FLOOR:
+                if (hit.getFace() != Direction.UP)
+                    return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+                break;
+            case CEILING:
+                if (hit.getFace() != Direction.DOWN)
+                    return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+                break;
+        }
 
         if (!state.get(POWERED))
         {
