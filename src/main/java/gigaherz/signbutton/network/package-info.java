@@ -2,6 +2,6 @@
 @ParametersAreNonnullByDefault
 package gigaherz.signbutton.network;
 
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

@@ -1,23 +1,24 @@
 package gigaherz.signbutton.button;
 
 import gigaherz.signbutton.ModSignButton;
-import net.minecraft.tileentity.SignTileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class SignButtonTileEntity extends SignTileEntity
+public class SignButtonTileEntity extends SignBlockEntity
 {
     @ObjectHolder("signbutton:sign_button")
-    public static TileEntityType<SignButtonTileEntity> TYPE;
+    public static BlockEntityType<SignButtonTileEntity> TYPE;
 
-    public SignButtonTileEntity()
+    public SignButtonTileEntity(BlockPos pos, BlockState state)
     {
-        super();
-        ModSignButton.logger.warn("TILE CREATED!");
+        super(pos, state);
     }
 
     @Override
-    public TileEntityType<?> getType()
+    public BlockEntityType<?> getType()
     {
         return TYPE;
     }

@@ -3,15 +3,13 @@ package gigaherz.signbutton.client;
 import gigaherz.signbutton.button.SignButtonTileEntity;
 import gigaherz.signbutton.button.SignButtonTileEntityRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Atlases;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.DeferredWorkQueue;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class ClientUtils
@@ -23,25 +21,25 @@ public class ClientUtils
 
     public static void setupClient()
     {
-        ClientRegistry.bindTileEntityRenderer(SignButtonTileEntity.TYPE, SignButtonTileEntityRenderer::new);
+        BlockEntityRenderers.register(SignButtonTileEntity.TYPE, SignButtonTileEntityRenderer::new);
     }
 
     public static void openSignButtonGui(BlockPos pos)
     {
         Minecraft mc = Minecraft.getInstance();
         mc.execute(() -> {
-            World world = mc.world;
-            TileEntity te = world.getTileEntity(pos);
+            Level world = mc.level;
+            BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof SignButtonTileEntity)
             {
-                mc.displayGuiScreen(new SignButtonEditScreen((SignButtonTileEntity) te));
+                mc.setScreen(new SignButtonEditScreen((SignButtonTileEntity) te, mc.isTextFilteringEnabled()));
             }
         });
     }
 
     public static void stitchTextures(TextureStitchEvent.Pre event)
     {
-        if (event.getMap().getTextureLocation().equals(Atlases.SIGN_ATLAS))
+        if (event.getMap().location().equals(Sheets.SIGN_SHEET))
         {
             event.addSprite(new ResourceLocation("signbutton", "entity/sign_button"));
         }

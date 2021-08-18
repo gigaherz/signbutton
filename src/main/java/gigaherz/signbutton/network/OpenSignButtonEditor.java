@@ -1,9 +1,9 @@
 package gigaherz.signbutton.network;
 
 import gigaherz.signbutton.client.ClientUtils;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -16,12 +16,12 @@ public class OpenSignButtonEditor
         this.pos = pos;
     }
 
-    public OpenSignButtonEditor(PacketBuffer buf)
+    public OpenSignButtonEditor(FriendlyByteBuf buf)
     {
         pos = buf.readBlockPos();
     }
 
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         buf.writeBlockPos(pos);
     }
