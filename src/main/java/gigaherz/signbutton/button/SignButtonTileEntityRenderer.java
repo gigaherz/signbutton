@@ -79,7 +79,7 @@ public class SignButtonTileEntityRenderer
         @SubscribeEvent
         public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event)
         {
-            WoodType.values().forEach(woodType -> event.registerLayerDefinition(createSignButtonModelName(woodType), Events::createSignOverlayLayer));
+            SignButtonWoodTypes.values().forEach(woodType -> event.registerLayerDefinition(createSignButtonModelName(woodType), Events::createSignOverlayLayer));
         }
     }
 
@@ -95,9 +95,9 @@ public class SignButtonTileEntityRenderer
 
     public SignButtonTileEntityRenderer(BlockEntityRendererProvider.Context ctx)
     {
-        this.signModels = WoodType.values().collect(ImmutableMap.toImmutableMap(Function.identity(),
+        this.signModels = SignButtonWoodTypes.values().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignRenderer.SignModel(ctx.bakeLayer(ModelLayers.createSignModelName(woodType)))));
-        this.overlayModels = WoodType.values().collect(ImmutableMap.toImmutableMap(Function.identity(),
+        this.overlayModels = SignButtonWoodTypes.values().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignModel(ctx.bakeLayer(createSignButtonModelName(woodType)))));
         this.font = ctx.getFont();
     }
