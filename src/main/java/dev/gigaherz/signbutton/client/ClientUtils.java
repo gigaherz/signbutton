@@ -1,7 +1,8 @@
-package gigaherz.signbutton.client;
+package dev.gigaherz.signbutton.client;
 
-import gigaherz.signbutton.button.SignButtonTileEntity;
-import gigaherz.signbutton.button.SignButtonTileEntityRenderer;
+import dev.gigaherz.signbutton.button.DynamicSignButtonBlockEntity;
+import dev.gigaherz.signbutton.button.SignButtonBlockEntity;
+import dev.gigaherz.signbutton.button.SignButtonRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -21,7 +22,8 @@ public class ClientUtils
 
     public static void setupClient()
     {
-        BlockEntityRenderers.register(SignButtonTileEntity.TYPE, SignButtonTileEntityRenderer::new);
+        BlockEntityRenderers.register(SignButtonBlockEntity.TYPE, SignButtonRenderer::new);
+        BlockEntityRenderers.register(DynamicSignButtonBlockEntity.TYPE, SignButtonRenderer::new);
     }
 
     public static void openSignButtonGui(BlockPos pos)
@@ -30,9 +32,9 @@ public class ClientUtils
         mc.execute(() -> {
             Level world = mc.level;
             BlockEntity te = world.getBlockEntity(pos);
-            if (te instanceof SignButtonTileEntity)
+            if (te instanceof SignButtonBlockEntity)
             {
-                mc.setScreen(new SignButtonEditScreen((SignButtonTileEntity) te, mc.isTextFilteringEnabled()));
+                mc.setScreen(new SignButtonEditScreen((SignButtonBlockEntity) te, mc.isTextFilteringEnabled()));
             }
         });
     }

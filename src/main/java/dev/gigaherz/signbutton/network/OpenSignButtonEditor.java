@@ -1,6 +1,6 @@
-package gigaherz.signbutton.network;
+package dev.gigaherz.signbutton.network;
 
-import gigaherz.signbutton.client.ClientUtils;
+import dev.gigaherz.signbutton.client.ClientUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;

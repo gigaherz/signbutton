@@ -1,13 +1,11 @@
-package gigaherz.signbutton.client;
+package dev.gigaherz.signbutton.client;
 
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import gigaherz.signbutton.button.SignButtonTileEntity;
-import net.minecraft.client.Minecraft;
+import dev.gigaherz.signbutton.button.SignButtonBlockEntity;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.client.gui.screens.inventory.SignEditScreen;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.resources.model.Material;
@@ -20,10 +18,10 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 
 public class SignButtonEditScreen extends SignEditScreen
 {
-    private final SignButtonTileEntity tileSign;
+    private final SignButtonBlockEntity tileSign;
     private WoodType woodType;
 
-    public SignButtonEditScreen(SignButtonTileEntity teSign, boolean textFilteringEnabled)
+    public SignButtonEditScreen(SignButtonBlockEntity teSign, boolean textFilteringEnabled)
     {
         super(teSign, textFilteringEnabled);
         this.tileSign = teSign;

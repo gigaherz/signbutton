@@ -1,7 +1,7 @@
-package gigaherz.signbutton.button;
+package dev.gigaherz.signbutton.button;
 
-import gigaherz.signbutton.ModSignButton;
-import gigaherz.signbutton.network.OpenSignButtonEditor;
+import dev.gigaherz.signbutton.ModSignButton;
+import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
@@ -35,9 +35,9 @@ public class SignButtonItem extends BlockItem
         if (!worldIn.isClientSide && !flag && player != null)
         {
             BlockEntity te = worldIn.getBlockEntity(pos);
-            if (te instanceof SignButtonTileEntity)
+            if (te instanceof SignButtonBlockEntity sbe)
             {
-                ((SignButtonTileEntity) te).setAllowedPlayerEditor(player.getUUID());
+                sbe.setAllowedPlayerEditor(player.getUUID());
                 ModSignButton.channel.sendTo(new OpenSignButtonEditor(pos), ((ServerPlayer) player).connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
             }
         }
@@ -54,3 +54,4 @@ public class SignButtonItem extends BlockItem
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package gigaherz.signbutton.button;
+package dev.gigaherz.signbutton.button;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Vector3f;
-import gigaherz.signbutton.ModSignButton;
+import dev.gigaherz.signbutton.ModSignButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.Model;
@@ -40,10 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static net.minecraft.client.renderer.blockentity.SignRenderer.getWoodType;
-
-public class SignButtonTileEntityRenderer
-        implements BlockEntityRenderer<SignButtonTileEntity>
+public class SignButtonRenderer
+        implements BlockEntityRenderer<SignButtonBlockEntity>
 {
     public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, new ResourceLocation("signbutton", "entity/sign_button"));
 
@@ -79,7 +77,10 @@ public class SignButtonTileEntityRenderer
         @SubscribeEvent
         public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event)
         {
-            SignButtonWoodTypes.values().forEach(woodType -> event.registerLayerDefinition(createSignButtonModelName(woodType), Events::createSignOverlayLayer));
+            WoodType.values().forEach(woodType -> {
+                SignButtonWoodTypes.visit(woodType);
+                event.registerLayerDefinition(createSignButtonModelName(woodType), Events::createSignOverlayLayer);
+            });
         }
     }
 
@@ -93,17 +94,17 @@ public class SignButtonTileEntityRenderer
     private final Map<WoodType, Material> signMaterials = new HashMap<>();
     private final Font font;
 
-    public SignButtonTileEntityRenderer(BlockEntityRendererProvider.Context ctx)
+    public SignButtonRenderer(BlockEntityRendererProvider.Context ctx)
     {
-        this.signModels = SignButtonWoodTypes.values().collect(ImmutableMap.toImmutableMap(Function.identity(),
+        this.signModels = SignButtonWoodTypes.found().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignRenderer.SignModel(ctx.bakeLayer(ModelLayers.createSignModelName(woodType)))));
-        this.overlayModels = SignButtonWoodTypes.values().collect(ImmutableMap.toImmutableMap(Function.identity(),
+        this.overlayModels = SignButtonWoodTypes.found().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignModel(ctx.bakeLayer(createSignButtonModelName(woodType)))));
         this.font = ctx.getFont();
     }
 
     @Override
-    public void render(SignButtonTileEntity tileEntityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
+    public void render(SignButtonBlockEntity tileEntityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
     {
         final float scale = 0.6666667F;
 
@@ -147,7 +148,7 @@ public class SignButtonTileEntityRenderer
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(rotAroundX));
         matrixStackIn.translate(0.0, -0.3125, -0.4375D - (powered ? 0.035 : 0));
 
-        WoodType woodtype = getWoodType(blockstate.getBlock());
+        WoodType woodtype = tileEntityIn.getWoodType();
         SignRenderer.SignModel model = this.signModels.get(woodtype);
         SignModel overlayModel = this.overlayModels.get(woodtype);
         model.stick.visible=false;
@@ -214,3 +215,4 @@ public class SignButtonTileEntityRenderer
         }
     }
 }
+

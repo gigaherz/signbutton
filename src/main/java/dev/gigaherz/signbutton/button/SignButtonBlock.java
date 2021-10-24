@@ -1,8 +1,8 @@
-package gigaherz.signbutton.button;
+package dev.gigaherz.signbutton.button;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import gigaherz.signbutton.ModSignButton;
+import dev.gigaherz.signbutton.ModSignButton;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -75,7 +73,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new SignButtonTileEntity(pos, state);
+        return new SignButtonBlockEntity(pos, state);
     }
 
     @Override
@@ -371,3 +369,4 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
         }
     }
 }
+

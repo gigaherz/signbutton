@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package gigaherz.signbutton.client;
+package dev.gigaherz.signbutton;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

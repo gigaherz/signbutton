@@ -1,10 +1,11 @@
-package gigaherz.signbutton;
+package dev.gigaherz.signbutton;
 
-import gigaherz.signbutton.button.SignButtonBlock;
-import gigaherz.signbutton.button.SignButtonItem;
-import gigaherz.signbutton.button.SignButtonTileEntity;
-import gigaherz.signbutton.client.ClientUtils;
-import gigaherz.signbutton.network.OpenSignButtonEditor;
+import dev.gigaherz.signbutton.button.SignButtonBlock;
+import dev.gigaherz.signbutton.button.SignButtonItem;
+import dev.gigaherz.signbutton.client.ClientUtils;
+import dev.gigaherz.signbutton.button.DynamicSignButtonBlock;
+import dev.gigaherz.signbutton.button.SignButtonBlockEntity;
+import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -52,6 +53,8 @@ public class ModSignButton
         public static Block CRIMSON_SIGN_BUTTON;
         @ObjectHolder("signbutton:warped_sign_button")
         public static Block WARPED_SIGN_BUTTON;
+        @ObjectHolder("signbutton:dynamic_sign_button")
+        public static Block DYNAMIC_SIGN_BUTTON;
     }
 
     public static class Items
@@ -70,8 +73,10 @@ public class ModSignButton
         public static Item SPRUCE_SIGN_BUTTON;
         @ObjectHolder("signbutton:crimson_sign_button")
         public static Item CRIMSON_SIGN_BUTTON;
-        @ObjectHolder("signbutton:warped_sign_button")
+        @ObjectHolder("signbutton:dynamic_sign_button")
         public static Item WARPED_SIGN_BUTTON;
+        @ObjectHolder("signbutton:dynamic_sign_button")
+        public static Item DYNAMIC_SIGN_BUTTON;
     }
 
     public static ModSignButton instance;
@@ -112,7 +117,8 @@ public class ModSignButton
                 new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.OAK).setRegistryName("oak_sign_button"),
                 new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.SPRUCE).setRegistryName("spruce_sign_button"),
                 new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.CRIMSON).setRegistryName("crimson_sign_button"),
-                new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.WARPED).setRegistryName("warped_sign_button")
+                new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.WARPED).setRegistryName("warped_sign_button"),
+                new DynamicSignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD)).setRegistryName("dynamic_sign_button")
         );
     }
 
@@ -126,13 +132,14 @@ public class ModSignButton
                 new SignButtonItem(Blocks.OAK_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("oak_sign_button"),
                 new SignButtonItem(Blocks.SPRUCE_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("spruce_sign_button"),
                 new SignButtonItem(Blocks.CRIMSON_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("crimson_sign_button"),
-                new SignButtonItem(Blocks.WARPED_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("warped_sign_button")
+                new SignButtonItem(Blocks.WARPED_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("warped_sign_button"),
+                new SignButtonItem(Blocks.DYNAMIC_SIGN_BUTTON, new Item.Properties().stacksTo(16)).setRegistryName("dynamic_sign_button")
         );
     }
 
     public void registerTEs(RegistryEvent.Register<BlockEntityType<?>> event)
     {
-        event.getRegistry().register(BlockEntityType.Builder.of(SignButtonTileEntity::new,
+        event.getRegistry().register(BlockEntityType.Builder.of(SignButtonBlockEntity::new,
                 Blocks.ACACIA_SIGN_BUTTON, Blocks.BIRCH_SIGN_BUTTON, Blocks.DARK_OAK_SIGN_BUTTON,
                 Blocks.JUNGLE_SIGN_BUTTON, Blocks.OAK_SIGN_BUTTON, Blocks.SPRUCE_SIGN_BUTTON,
                 Blocks.CRIMSON_SIGN_BUTTON, Blocks.WARPED_SIGN_BUTTON).build(null).setRegistryName("sign_button"));
