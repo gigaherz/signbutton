@@ -257,7 +257,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
             //worldIn.markForRerender(pos);
             worldIn.playSound(player, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
             notifyFacing(state, worldIn, pos);
-            worldIn.getBlockTicks().scheduleTick(new BlockPos(pos), this, TICK_RATE);
+            worldIn.scheduleTick(new BlockPos(pos), this, TICK_RATE);
         }
 
         return InteractionResult.SUCCESS;
@@ -365,7 +365,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
 
         if (arrowsPresent)
         {
-            worldIn.getBlockTicks().scheduleTick(new BlockPos(pos), this, TICK_RATE);
+            worldIn.scheduleTick(new BlockPos(pos), this, TICK_RATE);
         }
     }
 }

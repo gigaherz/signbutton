@@ -1,10 +1,7 @@
 package dev.gigaherz.signbutton;
 
-import dev.gigaherz.signbutton.button.SignButtonBlock;
-import dev.gigaherz.signbutton.button.SignButtonItem;
+import dev.gigaherz.signbutton.button.*;
 import dev.gigaherz.signbutton.client.ClientUtils;
-import dev.gigaherz.signbutton.button.DynamicSignButtonBlock;
-import dev.gigaherz.signbutton.button.SignButtonBlockEntity;
 import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -22,8 +19,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ObjectHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,8 +50,6 @@ public class ModSignButton
         public static Block CRIMSON_SIGN_BUTTON;
         @ObjectHolder("signbutton:warped_sign_button")
         public static Block WARPED_SIGN_BUTTON;
-        @ObjectHolder("signbutton:dynamic_sign_button")
-        public static Block DYNAMIC_SIGN_BUTTON;
     }
 
     public static class Items
@@ -73,10 +68,8 @@ public class ModSignButton
         public static Item SPRUCE_SIGN_BUTTON;
         @ObjectHolder("signbutton:crimson_sign_button")
         public static Item CRIMSON_SIGN_BUTTON;
-        @ObjectHolder("signbutton:dynamic_sign_button")
+        @ObjectHolder("signbutton:warped_sign_button")
         public static Item WARPED_SIGN_BUTTON;
-        @ObjectHolder("signbutton:dynamic_sign_button")
-        public static Item DYNAMIC_SIGN_BUTTON;
     }
 
     public static ModSignButton instance;
@@ -117,8 +110,7 @@ public class ModSignButton
                 new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.OAK).setRegistryName("oak_sign_button"),
                 new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.SPRUCE).setRegistryName("spruce_sign_button"),
                 new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.CRIMSON).setRegistryName("crimson_sign_button"),
-                new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.WARPED).setRegistryName("warped_sign_button"),
-                new DynamicSignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD)).setRegistryName("dynamic_sign_button")
+                new SignButtonBlock(BlockBehaviour.Properties.of(Material.WOOD).noCollission().strength(0.5F).sound(SoundType.WOOD), WoodType.WARPED).setRegistryName("warped_sign_button")
         );
     }
 
@@ -132,17 +124,19 @@ public class ModSignButton
                 new SignButtonItem(Blocks.OAK_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("oak_sign_button"),
                 new SignButtonItem(Blocks.SPRUCE_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("spruce_sign_button"),
                 new SignButtonItem(Blocks.CRIMSON_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("crimson_sign_button"),
-                new SignButtonItem(Blocks.WARPED_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("warped_sign_button"),
-                new SignButtonItem(Blocks.DYNAMIC_SIGN_BUTTON, new Item.Properties().stacksTo(16)).setRegistryName("dynamic_sign_button")
+                new SignButtonItem(Blocks.WARPED_SIGN_BUTTON, new Item.Properties().stacksTo(16).tab(CreativeModeTab.TAB_REDSTONE)).setRegistryName("warped_sign_button")
         );
     }
 
     public void registerTEs(RegistryEvent.Register<BlockEntityType<?>> event)
     {
-        event.getRegistry().register(BlockEntityType.Builder.of(SignButtonBlockEntity::new,
+        event.getRegistry().registerAll(
+                BlockEntityType.Builder.of(SignButtonBlockEntity::new,
                 Blocks.ACACIA_SIGN_BUTTON, Blocks.BIRCH_SIGN_BUTTON, Blocks.DARK_OAK_SIGN_BUTTON,
                 Blocks.JUNGLE_SIGN_BUTTON, Blocks.OAK_SIGN_BUTTON, Blocks.SPRUCE_SIGN_BUTTON,
-                Blocks.CRIMSON_SIGN_BUTTON, Blocks.WARPED_SIGN_BUTTON).build(null).setRegistryName("sign_button"));
+                Blocks.CRIMSON_SIGN_BUTTON, Blocks.WARPED_SIGN_BUTTON).build(null).setRegistryName("sign_button")
+        );
+
     }
 
     public void commonSetup(FMLCommonSetupEvent event)
@@ -154,7 +148,6 @@ public class ModSignButton
 
     public void clientSetup(FMLClientSetupEvent event)
     {
-        ClientUtils.setupClient();
     }
 
     public static ResourceLocation location(String path)

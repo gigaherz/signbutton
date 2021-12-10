@@ -21,7 +21,7 @@ repositories {
     }
 }
 
-version = "2.2.3"
+version = "2.3.0"
 group = "dev.gigaherz.signbutton" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "SignButton-UNKNOWN"
 
@@ -29,9 +29,9 @@ project.afterEvaluate {
     archivesBaseName = "SignButton-${project.MC_VERSION}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-minecraft {mappings channel: 'official', version: '1.17.1'
+minecraft {mappings channel: 'official', version: '1.18'
 
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -70,9 +70,9 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.85'
+    minecraft 'net.minecraftforge:forge:1.18-38.0.16'
 
-    runtimeOnly fg.deobf("unused:twilightforest-1.17.1:4.0.755")
+    //runtimeOnly fg.deobf("unused:twilightforest-1.17.1:4.0.755")
 }
 
 jar {

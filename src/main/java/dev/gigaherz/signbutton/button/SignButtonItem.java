@@ -2,6 +2,7 @@ package dev.gigaherz.signbutton.button;
 
 import dev.gigaherz.signbutton.ModSignButton;
 import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.TooltipFlag;
@@ -15,8 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.network.NetworkDirection;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -49,7 +49,7 @@ public class SignButtonItem extends BlockItem
         super.appendHoverText(itemstack, world, list, flag);
 
         CompoundTag stackNbt = itemstack.getOrCreateTag();
-        if (stackNbt.contains("upgrade", Constants.NBT.TAG_STRING)) {
+        if (stackNbt.contains("upgrade", Tag.TAG_STRING)) {
             list.add(new TranslatableComponent(stackNbt.getString("upgrade")));
         }
     }
