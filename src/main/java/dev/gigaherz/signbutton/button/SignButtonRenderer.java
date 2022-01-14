@@ -59,8 +59,9 @@ public class SignButtonRenderer
         }
     }
 
-    public static ModelLayerLocation createSignButtonModelName(WoodType woodType) {
-        return new ModelLayerLocation(new ResourceLocation("sign/" + woodType.name()), "signbutton_overlay");
+    public static ModelLayerLocation createSignButtonModelName(WoodType p_171292_) {
+        ResourceLocation location = new ResourceLocation(p_171292_.name());
+        return new ModelLayerLocation(new ResourceLocation(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
     }
 
     @Mod.EventBusSubscriber(value= Dist.CLIENT, modid= ModSignButton.MODID, bus= Mod.EventBusSubscriber.Bus.MOD)
@@ -77,8 +78,7 @@ public class SignButtonRenderer
         @SubscribeEvent
         public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event)
         {
-            WoodType.values().forEach(woodType -> {
-                SignButtonWoodTypes.visit(woodType);
+            SignButtonWoodTypes.supported().forEach(woodType -> {
                 event.registerLayerDefinition(createSignButtonModelName(woodType), Events::createSignOverlayLayer);
             });
         }
@@ -96,9 +96,9 @@ public class SignButtonRenderer
 
     public SignButtonRenderer(BlockEntityRendererProvider.Context ctx)
     {
-        this.signModels = SignButtonWoodTypes.found().collect(ImmutableMap.toImmutableMap(Function.identity(),
+        this.signModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignRenderer.SignModel(ctx.bakeLayer(ModelLayers.createSignModelName(woodType)))));
-        this.overlayModels = SignButtonWoodTypes.found().collect(ImmutableMap.toImmutableMap(Function.identity(),
+        this.overlayModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignModel(ctx.bakeLayer(createSignButtonModelName(woodType)))));
         this.font = ctx.getFont();
     }
