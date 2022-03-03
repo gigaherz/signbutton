@@ -27,6 +27,8 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
+import java.util.HashMap;
+
 @Mod(ModSignButton.MODID)
 public class ModSignButton
 {
@@ -136,7 +138,6 @@ public class ModSignButton
                 Blocks.JUNGLE_SIGN_BUTTON, Blocks.OAK_SIGN_BUTTON, Blocks.SPRUCE_SIGN_BUTTON,
                 Blocks.CRIMSON_SIGN_BUTTON, Blocks.WARPED_SIGN_BUTTON).build(null).setRegistryName("sign_button")
         );
-
     }
 
     public void commonSetup(FMLCommonSetupEvent event)

@@ -31,7 +31,7 @@ project.afterEvaluate {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-minecraft {mappings channel: 'official', version: '1.18.1'
+minecraft {mappings channel: 'official', version: '1.18.2'
 
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -70,7 +70,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.1-39.0.20'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.0.2'
 
     //runtimeOnly fg.deobf("unused:twilightforest-1.17.1:4.0.755")
 }
