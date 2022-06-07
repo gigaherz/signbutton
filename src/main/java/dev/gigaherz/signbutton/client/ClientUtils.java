@@ -1,5 +1,6 @@
 package dev.gigaherz.signbutton.client;
 
+import dev.gigaherz.signbutton.ModSignButton;
 import dev.gigaherz.signbutton.button.SignButtonBlockEntity;
 import dev.gigaherz.signbutton.button.SignButtonRenderer;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,7 @@ public class ClientUtils
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
-        event.registerBlockEntityRenderer(SignButtonBlockEntity.TYPE, SignButtonRenderer::new);
+        event.registerBlockEntityRenderer(ModSignButton.SIGN_BUTTON_BLOCK_ENTITY.get(), SignButtonRenderer::new);
     }
 
     public static void openSignButtonGui(BlockPos pos)

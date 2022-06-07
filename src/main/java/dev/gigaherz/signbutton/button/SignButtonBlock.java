@@ -3,6 +3,7 @@ package dev.gigaherz.signbutton.button;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.gigaherz.signbutton.ModSignButton;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -320,13 +321,14 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
 
     @Deprecated
     @Override
-    public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, Random random)
+    public void randomTick(BlockState p_222954_, ServerLevel p_222955_, BlockPos p_222956_, RandomSource p_222957_)
     {
+        super.randomTick(p_222954_, p_222955_, p_222956_, p_222957_);
     }
 
     @Deprecated
     @Override
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand)
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand)
     {
         if (!worldIn.isClientSide)
         {

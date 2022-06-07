@@ -1,0 +1,5 @@
+{
+  "variants":{
+    "": { "model": "signbutton:block/crimson_sign_button" }
+  }
+}

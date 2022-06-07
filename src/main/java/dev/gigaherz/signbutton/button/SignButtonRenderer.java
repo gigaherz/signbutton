@@ -16,10 +16,7 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
@@ -27,6 +24,7 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -104,13 +102,13 @@ public class SignButtonRenderer
     }
 
     @Override
-    public void render(SignButtonBlockEntity tileEntityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
+    public void render(SignButtonBlockEntity signButtonBlockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
     {
         final float scale = 0.6666667F;
 
-        matrixStackIn.pushPose();
+        poseStack.pushPose();
 
-        BlockState blockstate = tileEntityIn.getBlockState();
+        BlockState blockstate = signButtonBlockEntity.getBlockState();
 
         boolean powered = blockstate.getValue(SignButtonBlock.POWERED);
         Direction facing = blockstate.getValue(SignButtonBlock.FACING);
@@ -143,52 +141,67 @@ public class SignButtonRenderer
                 break;
         }
 
-        matrixStackIn.translate(0.5, 0.5, 0.5);
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rotAroundY));
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(rotAroundX));
-        matrixStackIn.translate(0.0, -0.3125, -0.4375D - (powered ? 0.035 : 0));
+        poseStack.translate(0.5, 0.5, 0.5);
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(rotAroundY));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(rotAroundX));
+        poseStack.translate(0.0, -0.3125, -0.4375D - (powered ? 0.035 : 0));
 
-        WoodType woodtype = tileEntityIn.getWoodType();
+        WoodType woodtype = signButtonBlockEntity.getWoodType();
         SignRenderer.SignModel model = this.signModels.get(woodtype);
         SignModel overlayModel = this.overlayModels.get(woodtype);
         model.stick.visible=false;
 
-        matrixStackIn.pushPose();
-        matrixStackIn.scale(scale, -scale, -scale);
+        poseStack.pushPose();
+        poseStack.scale(scale, -scale, -scale);
         {
             Material material = signMaterials.computeIfAbsent(woodtype, woodType -> createSignMaterial(woodtype));
             VertexConsumer ivertexbuilder = material.buffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
-            model.root.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+            model.root.render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
         //((MultiBufferSource.BufferSource)bufferIn).endBatch();
         {
             VertexConsumer ivertexbuilder = SIGN_BUTTON_OVERLAY_MATERIAL.buffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
-            overlayModel.root.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+            overlayModel.root.render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
-        matrixStackIn.popPose();
-        matrixStackIn.translate(0.0D, (double) 0.33333334F, (double) 0.046666667F);
-        matrixStackIn.scale(0.010416667F, -0.010416667F, 0.010416667F);
+        poseStack.popPose();
+        poseStack.translate(0.0D, (double) 0.33333334F, (double) 0.046666667F);
+        poseStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
 
-        int color = tileEntityIn.getColor().getTextColor();
-        int red = (int) ((double) NativeImage.getR(color) * 0.4D);
-        int green = (int) ((double) NativeImage.getG(color) * 0.4D);
-        int blue = (int) ((double) NativeImage.getB(color) * 0.4D);
-        int adjustedColor = NativeImage.combine(0, blue, green, red);
+        int adjustedColor = SignRenderer.getDarkColor(signButtonBlockEntity);
 
-        FormattedCharSequence[] lines = tileEntityIn.getRenderMessages(Minecraft.getInstance().isTextFilteringEnabled(), (text) -> {
+        FormattedCharSequence[] lines = signButtonBlockEntity.getRenderMessages(Minecraft.getInstance().isTextFilteringEnabled(), (text) -> {
             List<FormattedCharSequence> list = this.font.split(text, 90);
             return list.isEmpty() ? FormattedCharSequence.EMPTY : list.get(0);
         });
+
+
+        int color1;
+        boolean drawOutline;
+        int glowCombinedLight;
+        if (signButtonBlockEntity.hasGlowingText()) {
+            color1 = signButtonBlockEntity.getColor().getTextColor();
+            drawOutline = SignRenderer.isOutlineVisible(signButtonBlockEntity, color1);
+            glowCombinedLight = LightTexture.FULL_BRIGHT;
+        } else {
+            color1 = adjustedColor;
+            drawOutline = false;
+            glowCombinedLight = combinedLightIn;
+        }
+
         for (int line = 0; line < 4; ++line)
         {
             FormattedCharSequence text = lines[line];
             if (text != null) {
                 float f3 = (float)(-font.width(text) / 2);
-                font.drawInBatch(text, f3, (float)(line * 10 - 20), adjustedColor, false, matrixStackIn.last().pose(), bufferIn, false, 0, combinedLightIn);
+                if (drawOutline) {
+                    font.drawInBatch8xOutline(text, f3, (float)(line * 10 - 20), color1, adjustedColor, poseStack.last().pose(), bufferIn, glowCombinedLight);
+                } else {
+                    font.drawInBatch(text, f3, (float)(line * 10 - 20), color1, false, poseStack.last().pose(), bufferIn, false, 0, glowCombinedLight);
+                }
             }
         }
 
-        matrixStackIn.popPose();
+        poseStack.popPose();
     }
 
     private static class ButtonRenderTypes extends RenderType

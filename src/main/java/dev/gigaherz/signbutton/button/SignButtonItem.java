@@ -14,7 +14,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkDirection;
 
@@ -50,7 +49,7 @@ public class SignButtonItem extends BlockItem
 
         CompoundTag stackNbt = itemstack.getOrCreateTag();
         if (stackNbt.contains("upgrade", Tag.TAG_STRING)) {
-            list.add(new TranslatableComponent(stackNbt.getString("upgrade")));
+            list.add(Component.translatable(stackNbt.getString("upgrade")));
         }
     }
 }
