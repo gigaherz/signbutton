@@ -1,25 +1,23 @@
-modLoader="javafml" #mandatory
-loaderVersion="[38,)" #mandatory
+modLoader="javafml"
+loaderVersion="[38,)"
 license="BSD (3 clause)"
+issueTrackerURL="https://github.com/gigaherz/SignButton/issues"
 
-[[mods]] #mandatory
-modId="signbutton" #mandatory
-version="${file.jarVersion}" #mandatory
-displayName="Sign Button" #mandatory
+[[mods]]
+modId="signbutton"
+version="${file.jarVersion}"
+displayName="Sign Button"
 description='''
 A sign that is a button
 '''
-#updateJSONURL="http://myurl.me/" #optional
-issueTrackerURL="https://github.com/gigaherz/SignButton/issues" #optional
-displayURL="https://github.com/gigaherz/SignButton" #optional
-logoFile="logo.png" #optional
-credits="Thanks for this example mod goes to Java" #optional
-authors="gigaherz" #optional
+displayURL="https://github.com/gigaherz/SignButton"
+logoFile="logo.png"
+authors="gigaherz"
 
-[[dependencies.signbutton]] #optional
-    modId="forge" #mandatory
-    mandatory=true #mandatory
-    versionRange="[38.0.16,)" #mandatory
+[[dependencies.signbutton]]
+    modId="forge"
+    mandatory=true
+    versionRange="[38.0.16,)"
     ordering="NONE"
     side="BOTH"
 

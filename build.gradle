@@ -21,7 +21,7 @@ repositories {
     }
 }
 
-version = "2.3.1"
+version = "2.3.2"
 group = "dev.gigaherz.signbutton" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "SignButton-UNKNOWN"
 
