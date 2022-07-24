@@ -21,7 +21,7 @@ repositories {
     }
 }
 
-version = "2.4.0"
+version = "2.5.0"
 group = "dev.gigaherz.signbutton" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "SignButton-UNKNOWN"
 
@@ -70,7 +70,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19-41.0.1'
+    minecraft 'net.minecraftforge:forge:1.19-41.0.110'
 
     //runtimeOnly fg.deobf("unused:twilightforest-1.17.1:4.0.755")
 }
