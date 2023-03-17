@@ -1,0 +1,5 @@
+{
+  "sources": [
+    {"type": "single", "resource": "signbutton:entity/sign_button" }
+  ]
+}

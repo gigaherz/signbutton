@@ -1,12 +1,11 @@
 package dev.gigaherz.signbutton.button;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import dev.gigaherz.signbutton.ModSignButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -24,7 +23,6 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -142,8 +140,8 @@ public class SignButtonRenderer
         }
 
         poseStack.translate(0.5, 0.5, 0.5);
-        poseStack.mulPose(Vector3f.YP.rotationDegrees(rotAroundY));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(rotAroundX));
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotAroundY));
+        poseStack.mulPose(Axis.XP.rotationDegrees(rotAroundX));
         poseStack.translate(0.0, -0.3125, -0.4375D - (powered ? 0.035 : 0));
 
         WoodType woodtype = signButtonBlockEntity.getWoodType();

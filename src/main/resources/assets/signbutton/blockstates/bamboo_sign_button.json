@@ -1,0 +1,5 @@
+{
+  "variants":{
+    "": { "model": "signbutton:block/bamboo_sign_button" }
+  }
+}

@@ -7,6 +7,10 @@
     "signbutton:dark_oak_sign_button",
     "signbutton:jungle_sign_button",
     "signbutton:oak_sign_button",
-    "signbutton:spruce_sign_button"
+    "signbutton:spruce_sign_button",
+    "signbutton:mangrove_sign_button",
+    "signbutton:bamboo_sign_button",
+    "signbutton:crimson_sign_button",
+    "signbutton:warped_sign_button"
   ]
 }

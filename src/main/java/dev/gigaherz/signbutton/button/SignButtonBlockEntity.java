@@ -27,5 +27,4 @@ public class SignButtonBlockEntity extends SignBlockEntity
             return block.type();
         return WoodType.OAK;
     }
-
 }
