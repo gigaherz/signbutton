@@ -37,7 +37,7 @@ public class SignButtonItem extends BlockItem
             if (te instanceof SignButtonBlockEntity sbe)
             {
                 sbe.setAllowedPlayerEditor(player.getUUID());
-                ModSignButton.channel.sendTo(new OpenSignButtonEditor(pos), ((ServerPlayer) player).connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                ModSignButton.channel.sendTo(new OpenSignButtonEditor(pos), ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
             }
         }
         return flag;

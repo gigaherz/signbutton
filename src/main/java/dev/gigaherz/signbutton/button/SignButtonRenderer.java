@@ -194,7 +194,7 @@ public class SignButtonRenderer
                 if (drawOutline) {
                     font.drawInBatch8xOutline(text, f3, (float)(line * 10 - 20), color1, adjustedColor, poseStack.last().pose(), bufferIn, glowCombinedLight);
                 } else {
-                    font.drawInBatch(text, f3, (float)(line * 10 - 20), color1, false, poseStack.last().pose(), bufferIn, false, 0, glowCombinedLight);
+                    font.drawInBatch(text, f3, (float)(line * 10 - 20), color1, false, poseStack.last().pose(), bufferIn, Font.DisplayMode.NORMAL, 0, glowCombinedLight);
                 }
             }
         }
