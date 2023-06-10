@@ -12,7 +12,7 @@ public class SignButtonBlockEntity extends SignBlockEntity
 {
     public SignButtonBlockEntity(BlockPos pos, BlockState state)
     {
-        super(pos, state);
+        super(ModSignButton.SIGN_BUTTON_BLOCK_ENTITY.get(), pos, state);
     }
 
     @Override

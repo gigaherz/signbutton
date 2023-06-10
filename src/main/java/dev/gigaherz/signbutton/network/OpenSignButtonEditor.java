@@ -26,8 +26,9 @@ public class OpenSignButtonEditor
         buf.writeBlockPos(pos);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> context)
+    public boolean handle(Supplier<NetworkEvent.Context> context)
     {
         ClientUtils.openSignButtonGui(pos);
+        return true;
     }
 }

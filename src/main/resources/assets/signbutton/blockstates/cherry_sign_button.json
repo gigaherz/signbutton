@@ -1,0 +1,5 @@
+{
+  "variants":{
+    "": { "model": "signbutton:block/cherry_sign_button" }
+  }
+}

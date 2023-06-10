@@ -29,7 +29,7 @@ public class ClientUtils
             Level world = mc.level;
             if (world != null && world.getBlockEntity(pos) instanceof SignButtonBlockEntity sign)
             {
-                mc.setScreen(new SignEditScreen(sign, mc.isTextFilteringEnabled()));
+                mc.setScreen(new SignEditScreen(sign, true, mc.isTextFilteringEnabled()));
             }
         });
     }

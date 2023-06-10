@@ -165,9 +165,10 @@ public class SignButtonRenderer
         poseStack.translate(0.0D, (double) 0.33333334F, (double) 0.046666667F);
         poseStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
 
-        int adjustedColor = SignRenderer.getDarkColor(signButtonBlockEntity);
+        var frontText=signButtonBlockEntity.getFrontText();
+        int adjustedColor = SignRenderer.getDarkColor(frontText);
 
-        FormattedCharSequence[] lines = signButtonBlockEntity.getRenderMessages(Minecraft.getInstance().isTextFilteringEnabled(), (text) -> {
+        FormattedCharSequence[] lines = frontText.getRenderMessages(Minecraft.getInstance().isTextFilteringEnabled(), (text) -> {
             List<FormattedCharSequence> list = this.font.split(text, 90);
             return list.isEmpty() ? FormattedCharSequence.EMPTY : list.get(0);
         });
@@ -176,9 +177,9 @@ public class SignButtonRenderer
         int color1;
         boolean drawOutline;
         int glowCombinedLight;
-        if (signButtonBlockEntity.hasGlowingText()) {
-            color1 = signButtonBlockEntity.getColor().getTextColor();
-            drawOutline = SignRenderer.isOutlineVisible(signButtonBlockEntity, color1);
+        if (frontText.hasGlowingText()) {
+            color1 = frontText.getColor().getTextColor();
+            drawOutline = SignRenderer.isOutlineVisible(signButtonBlockEntity.getBlockPos(), color1);
             glowCombinedLight = LightTexture.FULL_BRIGHT;
         } else {
             color1 = adjustedColor;

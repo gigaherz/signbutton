@@ -217,7 +217,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
     @Deprecated
     @Override
     public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
-        return world.getBlockState(pos.relative(getEffectiveFacing(state).getOpposite())).getMaterial().isSolid();
+        return world.getBlockState(pos.relative(getEffectiveFacing(state).getOpposite())).isSolid();
     }
 
     private Direction getEffectiveFacing(BlockState state)
@@ -262,6 +262,12 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public float getYRotationDegrees(BlockState state)
+    {
+        return state.getValue(FACING).toYRot();
     }
 
     private void notifyFacing(BlockState state, Level worldIn, BlockPos pos)
