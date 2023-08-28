@@ -179,8 +179,6 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
         List<Direction> directions = Lists.newArrayList(clickedFace);
         Arrays.stream(context.getNearestLookingDirections()).filter(f -> f != clickedFace).forEach(directions::add);
 
-        ModSignButton.logger.warn(directions.stream().map(Direction::toString).collect(Collectors.joining(",")));
-
         for (int i = 0; i < directions.size(); i++)
         {
             Direction lookDirection = directions.get(i);

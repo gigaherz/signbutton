@@ -1,24 +1,27 @@
 package dev.gigaherz.signbutton;
 
-import dev.gigaherz.signbutton.button.*;
+import com.mojang.logging.LogUtils;
+import dev.gigaherz.signbutton.button.SignButtonBlock;
+import dev.gigaherz.signbutton.button.SignButtonBlockEntity;
+import dev.gigaherz.signbutton.button.SignButtonItem;
+import dev.gigaherz.signbutton.button.SignButtonWoodTypes;
 import dev.gigaherz.signbutton.client.ClientUtils;
 import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
-import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkDirection;
@@ -27,16 +30,13 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import net.minecraft.world.level.block.state.BlockBehaviour;
-
-import java.util.HashMap;
+import org.slf4j.Logger;
 
 @Mod(ModSignButton.MODID)
 public class ModSignButton
 {
+    private static final Logger logger = LogUtils.getLogger();
+
     public static final String MODID = "signbutton";
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
@@ -74,10 +74,6 @@ public class ModSignButton
                     MANGROVE_SIGN_BUTTON.get(), BAMBOO_SIGN_BUTTON.get(), CHERRY_SIGN_BUTTON.get(),
                     CRIMSON_SIGN_BUTTON.get(), WARPED_SIGN_BUTTON.get()).build(null));
 
-    public static ModSignButton instance;
-
-    public static final Logger logger = LogManager.getLogger(MODID);
-
     public static final String CHANNEL = "main";
     private static final String PROTOCOL_VERSION = "1.0";
     public static SimpleChannel channel = NetworkRegistry.ChannelBuilder
@@ -89,8 +85,6 @@ public class ModSignButton
 
     public ModSignButton()
     {
-        instance = this;
-
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         BLOCKS.register(modEventBus);
@@ -98,7 +92,6 @@ public class ModSignButton
         BLOCK_ENTITIES.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::clientSetup);
         modEventBus.addListener(this::addItemsToTabs);
 
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientUtils::initClient);
@@ -130,15 +123,6 @@ public class ModSignButton
     {
         int messageNumber = 0;
         channel.messageBuilder (OpenSignButtonEditor.class, messageNumber++, NetworkDirection.PLAY_TO_CLIENT).encoder(OpenSignButtonEditor::encode).decoder(OpenSignButtonEditor::new).consumerNetworkThread(OpenSignButtonEditor::handle).add();
-        logger.debug("Final message number: " + messageNumber);
-    }
-
-    public void clientSetup(FMLClientSetupEvent event)
-    {
-    }
-
-    public static ResourceLocation location(String path)
-    {
-        return new ResourceLocation(MODID, path);
+        logger.trace("Final message number: " + messageNumber);
     }
 }

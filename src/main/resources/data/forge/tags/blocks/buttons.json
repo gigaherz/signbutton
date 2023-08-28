@@ -11,6 +11,7 @@
     "signbutton:mangrove_sign_button",
     "signbutton:bamboo_sign_button",
     "signbutton:crimson_sign_button",
-    "signbutton:warped_sign_button"
+    "signbutton:warped_sign_button",
+    "signbutton:cherry_sign_button"
   ]
 }
