@@ -16,14 +16,14 @@ authors="gigaherz"
 
 [[dependencies.signbutton]]
     modId="neoforge"
-    mandatory=true
-    versionRange="[20.4,)"
+    type="required"
+    versionRange="[20.4.16-beta,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.signbutton]]
     modId="minecraft"
-    mandatory=true
+    type="required"
     versionRange="[1.20.4,1.21)"
     ordering="NONE"
     side="BOTH"

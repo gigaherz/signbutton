@@ -9,7 +9,7 @@ plugins {
     id 'net.neoforged.gradle.userdev' version '7.0.72'
 }
 
-version = "2.5.4"
+version = "2.5.5"
 group = "dev.gigaherz.signbutton"
 
 Provider<String> minecraftVersion(Transformer<String, String> mapper) {
