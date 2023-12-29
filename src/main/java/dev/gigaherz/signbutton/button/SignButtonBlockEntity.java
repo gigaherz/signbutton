@@ -6,7 +6,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraftforge.registries.ObjectHolder;
 
 public class SignButtonBlockEntity extends SignBlockEntity
 {

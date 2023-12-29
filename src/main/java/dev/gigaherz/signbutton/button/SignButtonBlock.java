@@ -2,12 +2,13 @@ package dev.gigaherz.signbutton.button;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import dev.gigaherz.signbutton.ModSignButton;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -34,20 +35,20 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 public class SignButtonBlock extends SignBlock implements EntityBlock
 {
+    public static final MapCodec<StandingSignBlock> CODEC = RecordCodecBuilder.mapCodec(
+            p_308840_ -> p_308840_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(SignBlock::type), propertiesCodec())
+                    .apply(p_308840_, StandingSignBlock::new)
+    );
+
     public static final EnumProperty<AttachFace> FACE = BlockStateProperties.ATTACH_FACE;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
@@ -57,7 +58,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
 
     public SignButtonBlock(Properties properties, WoodType woodType)
     {
-        super(properties, woodType);
+        super(woodType, properties);
         this.registerDefaultState(this.getStateDefinition().any()
                 .setValue(FACE, AttachFace.FLOOR)
                 .setValue(FACING, Direction.NORTH)
@@ -298,6 +299,12 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
     public boolean isSignalSource(BlockState state)
     {
         return true;
+    }
+
+    @Override
+    protected MapCodec<? extends SignBlock> codec()
+    {
+        return CODEC;
     }
 
     @Override

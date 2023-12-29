@@ -7,14 +7,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.SignEditScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class ClientUtils
 {
-    public static void initClient()
+    public static void initClient(IEventBus modBus)
     {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientUtils::registerRenderers);
+        modBus.addListener(ClientUtils::registerRenderers);
     }
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event)
