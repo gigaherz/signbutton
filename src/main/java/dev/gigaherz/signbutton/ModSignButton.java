@@ -11,7 +11,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -24,9 +23,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -75,15 +73,6 @@ public class ModSignButton
                     MANGROVE_SIGN_BUTTON.get(), BAMBOO_SIGN_BUTTON.get(), CHERRY_SIGN_BUTTON.get(),
                     CRIMSON_SIGN_BUTTON.get(), WARPED_SIGN_BUTTON.get()).build(null));
 
-    public static final String CHANNEL = "main";
-    private static final String PROTOCOL_VERSION = "1.0";
-    public static SimpleChannel channel = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(MODID, CHANNEL))
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
-            .simpleChannel();
-
     public ModSignButton(IEventBus modEventBus)
     {
 
@@ -119,10 +108,9 @@ public class ModSignButton
         }
     }
 
-    public void commonSetup(FMLCommonSetupEvent event)
+    private void commonSetup(RegisterPayloadHandlerEvent event)
     {
-        int messageNumber = 0;
-        channel.messageBuilder (OpenSignButtonEditor.class, messageNumber++, PlayNetworkDirection.PLAY_TO_CLIENT).encoder(OpenSignButtonEditor::encode).decoder(OpenSignButtonEditor::new).consumerNetworkThread(OpenSignButtonEditor::handle).add();
-        logger.trace("Final message number: " + messageNumber);
+        final IPayloadRegistrar registrar = event.registrar(MODID).versioned("1.0");
+        registrar.play(OpenSignButtonEditor.ID, OpenSignButtonEditor::new, play -> play.server(OpenSignButtonEditor::handle));
     }
 }
