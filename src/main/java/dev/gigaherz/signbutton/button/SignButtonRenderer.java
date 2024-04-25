@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
@@ -60,7 +61,7 @@ public class SignButtonRenderer
         return new ModelLayerLocation(new ResourceLocation(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
     }
 
-    @Mod.EventBusSubscriber(value= Dist.CLIENT, modid= ModSignButton.MODID, bus= Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value= Dist.CLIENT, modid= ModSignButton.MODID, bus= EventBusSubscriber.Bus.MOD)
     public static class Events
     {
         public static LayerDefinition createSignOverlayLayer() {

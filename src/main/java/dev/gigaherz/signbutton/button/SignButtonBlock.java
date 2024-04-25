@@ -5,9 +5,11 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -221,46 +223,37 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
 
     private Direction getEffectiveFacing(BlockState state)
     {
-        switch (state.getValue(FACE))
+        return switch (state.getValue(FACE))
         {
-            case FLOOR:
-                return Direction.UP;
-            case CEILING:
-                return Direction.DOWN;
-            default:
-                return state.getValue(FACING);
-        }
+            case FLOOR -> Direction.UP;
+            case CEILING -> Direction.DOWN;
+            default -> state.getValue(FACING);
+        };
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit)
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
     {
-        switch(state.getValue(FACE))
+        if (!switch (state.getValue(FACE))
         {
-            case WALL:
-                if (hit.getDirection() != state.getValue(FACING))
-                    return super.use(state, worldIn, pos, player, handIn, hit);
-                break;
-            case FLOOR:
-                if (hit.getDirection() != Direction.UP)
-                    return super.use(state, worldIn, pos, player, handIn, hit);
-                break;
-            case CEILING:
-                if (hit.getDirection() != Direction.DOWN)
-                    return super.use(state, worldIn, pos, player, handIn, hit);
-                break;
+            case WALL -> (hit.getDirection() == state.getValue(FACING));
+            case FLOOR -> (hit.getDirection() == Direction.UP);
+            case CEILING -> (hit.getDirection() == Direction.DOWN);
+        })
+        {
+            return super.useItemOn(stack, state, level, pos, player, hand, hit);
         }
 
         if (!state.getValue(POWERED))
         {
-            worldIn.setBlockAndUpdate(pos, state.setValue(POWERED, true));
+            level.setBlockAndUpdate(pos, state.setValue(POWERED, true));
             //worldIn.markForRerender(pos);
-            worldIn.playSound(player, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
-            notifyFacing(state, worldIn, pos);
-            worldIn.scheduleTick(new BlockPos(pos), this, TICK_RATE);
+            level.playSound(player, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
+            notifyFacing(state, level, pos);
+            level.scheduleTick(new BlockPos(pos), this, TICK_RATE);
         }
 
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override

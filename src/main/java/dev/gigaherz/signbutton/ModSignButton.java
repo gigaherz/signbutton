@@ -7,29 +7,48 @@ import dev.gigaherz.signbutton.button.SignButtonItem;
 import dev.gigaherz.signbutton.button.SignButtonWoodTypes;
 import dev.gigaherz.signbutton.client.ClientUtils;
 import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.recipes.*;
+import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Mod(ModSignButton.MODID)
 public class ModSignButton
@@ -82,6 +101,7 @@ public class ModSignButton
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addItemsToTabs);
+        modEventBus.addListener(this::gatherData);
 
         if (FMLEnvironment.dist == Dist.CLIENT) ClientUtils.initClient(modEventBus);
     }
@@ -108,9 +128,158 @@ public class ModSignButton
         }
     }
 
-    private void commonSetup(RegisterPayloadHandlerEvent event)
+    private void commonSetup(RegisterPayloadHandlersEvent event)
     {
-        final IPayloadRegistrar registrar = event.registrar(MODID).versioned("1.0");
-        registrar.play(OpenSignButtonEditor.ID, OpenSignButtonEditor::new, play -> play.server(OpenSignButtonEditor::handle));
+        final PayloadRegistrar registrar = event.registrar(MODID).versioned("1.0");
+        registrar.playToClient(OpenSignButtonEditor.TYPE, OpenSignButtonEditor.CODEC, OpenSignButtonEditor::handle);
+    }
+
+    private void gatherData(GatherDataEvent event)
+    {
+        Datagen.gatherData(event);
+    }
+
+    private static class Datagen
+    {
+        public static void gatherData(GatherDataEvent event)
+        {
+            DataGenerator gen = event.getGenerator();
+
+            gen.addProvider(event.includeServer(), new Recipes(gen.getPackOutput(), event.getLookupProvider()));
+            gen.addProvider(event.includeServer(), Loot.create(gen.getPackOutput(), event.getLookupProvider()));
+            gen.addProvider(event.includeServer(), new BlockTags(gen.getPackOutput(), event.getExistingFileHelper(), event.getLookupProvider()));
+            gen.addProvider(event.includeServer(), new ItemTags(gen.getPackOutput(), event.getExistingFileHelper(), event.getLookupProvider()));
+        }
+
+        private static class Recipes extends RecipeProvider
+        {
+            public Recipes(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookup)
+            {
+                super(gen, lookup);
+            }
+
+            @Override
+            protected void buildRecipes(RecipeOutput consumer)
+            {
+                signRecipe(consumer, OAK_SIGN_BUTTON_ITEM, Items.OAK_SIGN);
+                signRecipe(consumer, SPRUCE_SIGN_BUTTON_ITEM, Items.SPRUCE_SIGN);
+                signRecipe(consumer, BIRCH_SIGN_BUTTON_ITEM, Items.BIRCH_SIGN);
+                signRecipe(consumer, JUNGLE_SIGN_BUTTON_ITEM, Items.JUNGLE_SIGN);
+                signRecipe(consumer, ACACIA_SIGN_BUTTON_ITEM, Items.ACACIA_SIGN);
+                signRecipe(consumer, DARK_OAK_SIGN_BUTTON_ITEM, Items.DARK_OAK_SIGN);
+                signRecipe(consumer, MANGROVE_SIGN_BUTTON_ITEM, Items.MANGROVE_SIGN);
+                signRecipe(consumer, BAMBOO_SIGN_BUTTON_ITEM, Items.BAMBOO_SIGN);
+                signRecipe(consumer, CHERRY_SIGN_BUTTON_ITEM, Items.CHERRY_SIGN);
+                signRecipe(consumer, CRIMSON_SIGN_BUTTON_ITEM, Items.CRIMSON_SIGN);
+                signRecipe(consumer, WARPED_SIGN_BUTTON_ITEM, Items.WARPED_SIGN);
+            }
+
+            private static void signRecipe(RecipeOutput consumer, Supplier<SignButtonItem> signButton, Item originalSign)
+            {
+                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, signButton.get())
+                        .requires(originalSign)
+                        .requires(Items.REDSTONE_TORCH)
+                        .unlockedBy("has_torch", has(Items.REDSTONE_TORCH))
+                        .unlockedBy("has_sign", has(originalSign))
+                        .save(consumer);
+            }
+        }
+
+        private static class Loot
+        {
+            public static LootTableProvider create(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookup)
+            {
+                return new LootTableProvider(gen, Set.of(), List.of(
+                        new LootTableProvider.SubProviderEntry(Loot.BlockTables::new, LootContextParamSets.BLOCK)
+                ), lookup);
+            }
+
+            public static class BlockTables extends BlockLootSubProvider
+            {
+                protected BlockTables()
+                {
+                    super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+                }
+
+                @Override
+                protected void generate()
+                {
+                    dropSelf(OAK_SIGN_BUTTON.get());
+                    dropSelf(SPRUCE_SIGN_BUTTON.get());
+                    dropSelf(BIRCH_SIGN_BUTTON.get());
+                    dropSelf(JUNGLE_SIGN_BUTTON.get());
+                    dropSelf(ACACIA_SIGN_BUTTON.get());
+                    dropSelf(DARK_OAK_SIGN_BUTTON.get());
+                    dropSelf(MANGROVE_SIGN_BUTTON.get());
+                    dropSelf(BAMBOO_SIGN_BUTTON.get());
+                    dropSelf(CHERRY_SIGN_BUTTON.get());
+                    dropSelf(CRIMSON_SIGN_BUTTON.get());
+                    dropSelf(WARPED_SIGN_BUTTON.get());
+                }
+
+                @Override
+                protected Iterable<Block> getKnownBlocks()
+                {
+                    return BuiltInRegistries.BLOCK.entrySet().stream()
+                            .filter(e -> e.getKey().location().getNamespace().equals(MODID))
+                            .map(Map.Entry::getValue)
+                            .collect(Collectors.toList());
+                }
+            }
+        }
+
+
+        private static class BlockTags extends IntrinsicHolderTagsProvider<Block>
+        {
+            public BlockTags(PackOutput packOutput, ExistingFileHelper existingFileHelper, CompletableFuture<HolderLookup.Provider> lookup)
+            {
+                super(packOutput, Registries.BLOCK, lookup,
+                        (block) -> BuiltInRegistries.BLOCK.getResourceKey(block).orElseThrow(), MODID, existingFileHelper);
+            }
+
+            @Override
+            protected void addTags(HolderLookup.Provider lookup)
+            {
+                tag(net.minecraft.tags.BlockTags.BUTTONS)
+                        .add(OAK_SIGN_BUTTON.get())
+                        .add(SPRUCE_SIGN_BUTTON.get())
+                        .add(BIRCH_SIGN_BUTTON.get())
+                        .add(JUNGLE_SIGN_BUTTON.get())
+                        .add(ACACIA_SIGN_BUTTON.get())
+                        .add(DARK_OAK_SIGN_BUTTON.get())
+                        .add(MANGROVE_SIGN_BUTTON.get())
+                        .add(BAMBOO_SIGN_BUTTON.get())
+                        .add(CHERRY_SIGN_BUTTON.get())
+                        .add(CRIMSON_SIGN_BUTTON.get())
+                        .add(WARPED_SIGN_BUTTON.get());
+            }
+        }
+
+
+        private static class ItemTags extends IntrinsicHolderTagsProvider<Item>
+        {
+            public ItemTags(PackOutput packOutput, ExistingFileHelper existingFileHelper, CompletableFuture<HolderLookup.Provider> lookup)
+            {
+                super(packOutput, Registries.ITEM, lookup,
+                        (item) -> BuiltInRegistries.ITEM.getResourceKey(item).orElseThrow(), MODID, existingFileHelper);
+            }
+
+            @Override
+            protected void addTags(HolderLookup.Provider lookup)
+            {
+                tag(net.minecraft.tags.ItemTags.BUTTONS)
+                        .add(OAK_SIGN_BUTTON_ITEM.get())
+                        .add(SPRUCE_SIGN_BUTTON_ITEM.get())
+                        .add(BIRCH_SIGN_BUTTON_ITEM.get())
+                        .add(JUNGLE_SIGN_BUTTON_ITEM.get())
+                        .add(ACACIA_SIGN_BUTTON_ITEM.get())
+                        .add(DARK_OAK_SIGN_BUTTON_ITEM.get())
+                        .add(MANGROVE_SIGN_BUTTON_ITEM.get())
+                        .add(BAMBOO_SIGN_BUTTON_ITEM.get())
+                        .add(CHERRY_SIGN_BUTTON_ITEM.get())
+                        .add(CRIMSON_SIGN_BUTTON_ITEM.get())
+                        .add(WARPED_SIGN_BUTTON_ITEM.get());
+            }
+        }
     }
 }

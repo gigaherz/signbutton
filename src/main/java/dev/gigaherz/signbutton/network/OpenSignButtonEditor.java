@@ -3,39 +3,30 @@ package dev.gigaherz.signbutton.network;
 import dev.gigaherz.signbutton.client.ClientUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class OpenSignButtonEditor implements CustomPacketPayload
+public record OpenSignButtonEditor(BlockPos pos) implements CustomPacketPayload
 {
     public static final ResourceLocation ID = new ResourceLocation("signbutton","update_spell_sequence");
 
-    public BlockPos pos;
+    public static final Type<OpenSignButtonEditor> TYPE = new Type<>(ID);
 
-    public OpenSignButtonEditor(BlockPos pos)
-    {
-        this.pos = pos;
-    }
+    public static final StreamCodec<FriendlyByteBuf, OpenSignButtonEditor> CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, OpenSignButtonEditor::pos,
+            OpenSignButtonEditor::new
+    );
 
-    public OpenSignButtonEditor(FriendlyByteBuf buf)
+    public void handle(IPayloadContext context)
     {
-        pos = buf.readBlockPos();
-    }
-
-    public void write(FriendlyByteBuf buf)
-    {
-        buf.writeBlockPos(pos);
+        ClientUtils.openSignButtonGui(pos);
     }
 
     @Override
-    public ResourceLocation id()
+    public Type<? extends CustomPacketPayload> type()
     {
-        return ID;
-    }
-
-    public void handle(PlayPayloadContext context)
-    {
-        ClientUtils.openSignButtonGui(pos);
+        return TYPE;
     }
 }

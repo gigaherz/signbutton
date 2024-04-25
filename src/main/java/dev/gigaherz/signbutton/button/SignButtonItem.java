@@ -1,24 +1,18 @@
 package dev.gigaherz.signbutton.button;
 
-import dev.gigaherz.signbutton.ModSignButton;
 import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class SignButtonItem extends BlockItem
 {
@@ -37,20 +31,9 @@ public class SignButtonItem extends BlockItem
             if (te instanceof SignButtonBlockEntity sbe)
             {
                 sbe.setAllowedPlayerEditor(player.getUUID());
-                PacketDistributor.PLAYER.with((ServerPlayer) player).send(new OpenSignButtonEditor(pos));
+                PacketDistributor.sendToPlayer((ServerPlayer) player, new OpenSignButtonEditor(pos));
             }
         }
         return flag;
     }
-
-    @Override
-    public void appendHoverText(ItemStack itemstack, @Nullable Level world, List<Component> list, TooltipFlag flag) {
-        super.appendHoverText(itemstack, world, list, flag);
-
-        CompoundTag stackNbt = itemstack.getOrCreateTag();
-        if (stackNbt.contains("upgrade", Tag.TAG_STRING)) {
-            list.add(Component.translatable(stackNbt.getString("upgrade")));
-        }
-    }
 }
-
