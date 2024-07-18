@@ -190,15 +190,15 @@ public class ModSignButton
             public static LootTableProvider create(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookup)
             {
                 return new LootTableProvider(gen, Set.of(), List.of(
-                        new LootTableProvider.SubProviderEntry(Loot.BlockTables::new, LootContextParamSets.BLOCK)
+                        new LootTableProvider.SubProviderEntry(BlockTables::new, LootContextParamSets.BLOCK)
                 ), lookup);
             }
 
             public static class BlockTables extends BlockLootSubProvider
             {
-                protected BlockTables()
+                protected BlockTables(HolderLookup.Provider lookup)
                 {
-                    super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+                    super(Set.of(), FeatureFlags.REGISTRY.allFlags(), lookup);
                 }
 
                 @Override

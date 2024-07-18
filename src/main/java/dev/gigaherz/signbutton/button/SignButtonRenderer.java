@@ -40,7 +40,7 @@ import java.util.function.Function;
 public class SignButtonRenderer
         implements BlockEntityRenderer<SignButtonBlockEntity>
 {
-    public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, new ResourceLocation("signbutton", "entity/sign_button"));
+    public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, ResourceLocation.fromNamespaceAndPath("signbutton", "entity/sign_button"));
 
     public static final class SignModel extends Model
     {
@@ -51,14 +51,16 @@ public class SignButtonRenderer
             this.root = p_173657_;
         }
 
-        public void renderToBuffer(PoseStack p_112510_, VertexConsumer p_112511_, int p_112512_, int p_112513_, float p_112514_, float p_112515_, float p_112516_, float p_112517_) {
-            this.root.render(p_112510_, p_112511_, p_112512_, p_112513_, p_112514_, p_112515_, p_112516_, p_112517_);
+        @Override
+        public void renderToBuffer(PoseStack p_103111_, VertexConsumer p_103112_, int p_103113_, int p_103114_, int p_350308_)
+        {
+            this.root.render(p_103111_, p_103112_, p_103113_, p_103114_, p_350308_);
         }
     }
 
     public static ModelLayerLocation createSignButtonModelName(WoodType p_171292_) {
-        ResourceLocation location = new ResourceLocation(p_171292_.name());
-        return new ModelLayerLocation(new ResourceLocation(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
+        ResourceLocation location = ResourceLocation.parse(p_171292_.name());
+        return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
     }
 
     @EventBusSubscriber(value= Dist.CLIENT, modid= ModSignButton.MODID, bus= EventBusSubscriber.Bus.MOD)
@@ -82,8 +84,8 @@ public class SignButtonRenderer
     }
 
     private static Material createSignMaterial(WoodType p_173386_) {
-        ResourceLocation location = new ResourceLocation(p_173386_.name());
-        return new Material(Sheets.SIGN_SHEET, new ResourceLocation(location.getNamespace(), "entity/signs/" + location.getPath()));
+        ResourceLocation location = ResourceLocation.parse(p_173386_.name());
+        return new Material(Sheets.SIGN_SHEET, ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
     }
 
     private final Map<WoodType, SignRenderer.SignModel> signModels;

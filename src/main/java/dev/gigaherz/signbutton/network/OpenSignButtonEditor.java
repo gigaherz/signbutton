@@ -15,7 +15,7 @@ public record OpenSignButtonEditor(BlockPos pos) implements CustomPacketPayload
             OpenSignButtonEditor::new
     );
 
-    public static final ResourceLocation ID = new ResourceLocation("signbutton","update_spell_sequence");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("signbutton","update_spell_sequence");
 
     public static final Type<OpenSignButtonEditor> TYPE = new Type<>(ID);
 

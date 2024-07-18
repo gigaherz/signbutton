@@ -3,18 +3,15 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.134'
+    id 'net.neoforged.gradle.userdev' version '7.0.154'
 }
 
-version = "2.5.6"
+version = "2.6.0"
 group = "dev.gigaherz.signbutton"
 
-Provider<String> minecraftVersion(Transformer<String, String> mapper) {
-    return project.userDevRuntime.runtimes.map(r -> r.values().first().specification.minecraftVersion).map(mapper)
-}
-
+var minecraftVersion = project.provider((() -> project.userDevRuntime.definitions.values().first().specification.minecraftVersion))
 base {
-    archivesName = minecraftVersion { "SignButton-${it}" }
+    archivesName = minecraftVersion.map { "SignButton-${it}" }
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -59,13 +56,13 @@ runs {
 
 subsystems {
     parchment {
-        minecraftVersion="1.20.4"
-        mappingsVersion="2024.04.14"
+        minecraftVersion="1.21"
+        mappingsVersion="2024.07.07"
     }
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:20.6.78-beta'
+    implementation 'net.neoforged:neoforge:21.0.106-beta'
 }
 
 jar {
