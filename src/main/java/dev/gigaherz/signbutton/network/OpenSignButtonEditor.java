@@ -10,23 +10,23 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record OpenSignButtonEditor(BlockPos pos) implements CustomPacketPayload
 {
-    public static final ResourceLocation ID = new ResourceLocation("signbutton","update_spell_sequence");
-
-    public static final Type<OpenSignButtonEditor> TYPE = new Type<>(ID);
-
     public static final StreamCodec<FriendlyByteBuf, OpenSignButtonEditor> CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, OpenSignButtonEditor::pos,
             OpenSignButtonEditor::new
     );
 
-    public void handle(IPayloadContext context)
-    {
-        ClientUtils.openSignButtonGui(pos);
-    }
+    public static final ResourceLocation ID = new ResourceLocation("signbutton","update_spell_sequence");
+
+    public static final Type<OpenSignButtonEditor> TYPE = new Type<>(ID);
 
     @Override
     public Type<? extends CustomPacketPayload> type()
     {
         return TYPE;
+    }
+
+    public void handle(IPayloadContext context)
+    {
+        ClientUtils.openSignButtonGui(pos);
     }
 }
