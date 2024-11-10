@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
@@ -23,13 +22,13 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.TriState;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 import java.util.HashMap;
@@ -42,19 +41,10 @@ public class SignButtonRenderer
 {
     public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, ResourceLocation.fromNamespaceAndPath("signbutton", "entity/sign_button"));
 
-    public static final class SignModel extends Model
+    public static final class SignButtonModel extends Model
     {
-        public final ModelPart root;
-
-        public SignModel(ModelPart p_173657_) {
-            super(RenderType::entityCutoutNoCull);
-            this.root = p_173657_;
-        }
-
-        @Override
-        public void renderToBuffer(PoseStack p_103111_, VertexConsumer p_103112_, int p_103113_, int p_103114_, int p_350308_)
-        {
-            this.root.render(p_103111_, p_103112_, p_103113_, p_103114_, p_350308_);
+        public SignButtonModel(ModelPart rootPart) {
+            super(rootPart, RenderType::entityCutoutNoCull);
         }
     }
 
@@ -88,17 +78,21 @@ public class SignButtonRenderer
         return new Material(Sheets.SIGN_SHEET, ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
     }
 
-    private final Map<WoodType, SignRenderer.SignModel> signModels;
-    private final Map<WoodType, SignModel> overlayModels;
+    private final Map<WoodType, SignRenderer.Models> signModels;
+    private final Map<WoodType, Model> overlayModels;
     private final Map<WoodType, Material> signMaterials = new HashMap<>();
     private final Font font;
 
     public SignButtonRenderer(BlockEntityRendererProvider.Context ctx)
     {
         this.signModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
-                woodType -> new SignRenderer.SignModel(ctx.bakeLayer(ModelLayers.createSignModelName(woodType)))));
+                woodType -> new SignRenderer.Models(
+                        SignRenderer.createSignModel(ctx.getModelSet(), woodType, true),
+                        SignRenderer.createSignModel(ctx.getModelSet(), woodType, false)
+                )));
         this.overlayModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
-                woodType -> new SignModel(ctx.bakeLayer(createSignButtonModelName(woodType)))));
+                woodType -> new SignButtonModel(ctx.bakeLayer(createSignButtonModelName(woodType))))
+        );
         this.font = ctx.getFont();
     }
 
@@ -148,21 +142,22 @@ public class SignButtonRenderer
         poseStack.translate(0.0, -0.3125, -0.4375D - (powered ? 0.035 : 0));
 
         WoodType woodtype = signButtonBlockEntity.getWoodType();
-        SignRenderer.SignModel model = this.signModels.get(woodtype);
-        SignModel overlayModel = this.overlayModels.get(woodtype);
-        model.stick.visible=false;
+        var models = this.signModels.get(woodtype);
+        var model = models.wall();
+        var overlayModel = this.overlayModels.get(woodtype);
+        //model.stick.visible=false;
 
         poseStack.pushPose();
         poseStack.scale(scale, -scale, -scale);
         {
             Material material = signMaterials.computeIfAbsent(woodtype, woodType -> createSignMaterial(woodtype));
             VertexConsumer ivertexbuilder = material.buffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
-            model.root.render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+            model.root().render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
         //((MultiBufferSource.BufferSource)bufferIn).endBatch();
         {
             VertexConsumer ivertexbuilder = SIGN_BUTTON_OVERLAY_MATERIAL.buffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
-            overlayModel.root.render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+            overlayModel.root().render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
         poseStack.popPose();
         poseStack.translate(0.0D, (double) 0.33333334F, (double) 0.046666667F);
@@ -216,7 +211,7 @@ public class SignButtonRenderer
         public static RenderType entityTranslucentUnsorted(ResourceLocation texture, boolean doOverlay) {
             RenderType.CompositeState compositeState = RenderType.CompositeState.builder()
                     .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, TriState.FALSE, false))
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
                     .setLightmapState(LIGHTMAP)

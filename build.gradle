@@ -3,18 +3,20 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.154'
+    id 'net.neoforged.moddev' version '2.0.42-beta'
 }
 
-version = "2.6.0"
+version = "2.7.0"
 group = "dev.gigaherz.signbutton"
 
-var minecraftVersion = project.provider((() -> project.userDevRuntime.definitions.values().first().specification.minecraftVersion))
+var minecraftVersionResolver = project.neoForge.version.map { "1." + (it =~ /^(\d+(?:\.[1-9]\d*|))\./)[0][1] }
 base {
-    archivesName = minecraftVersion.map { "SignButton-${it}" }
+    archivesName = minecraftVersionResolver.map { "SignButton-${it}" }
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+java.withSourcesJar()
 
 sourceSets {
     main.resources.srcDirs += 'src/main/generated_resources'
@@ -30,55 +32,68 @@ repositories {
     }
 }
 
-minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+neoForge {
+    version = "21.3.19-beta"
 
-runs {
-    // applies to all the run configs below
-    configureEach {
-        systemProperty 'forge.logging.markers', '' // 'REGISTRIES'
-        systemProperty 'forge.logging.console.level', 'debug'
+    runs {
+        // applies to all the run configs below
+        configureEach {
+            gameDirectory = project.file('run')
+            logLevel = org.slf4j.event.Level.DEBUG
+            //jvmArgument "-Dmixin.debug.export=true"
+            //jvmArgument "-Dmixin.debug.verbose=true"
+        }
 
-        workingDirectory project.file('run')
+        client {
+            client()
+        }
 
-        modSource project.sourceSets.main
+        server {
+            server()
+        }
+
+        data {
+            data()
+            programArguments.addAll '--mod', 'signbutton', '--all', '--output', file('src/main/generated_resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
     }
 
-    client {
+    mods {
+        thismod {
+            sourceSet(sourceSets.main)
+        }
     }
 
-    server {
-    }
-
-    data {
-        programArguments.addAll '--mod', 'signbutton', '--all', '--output', file('src/main/generated_resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-    }
-}
-
-subsystems {
     parchment {
-        minecraftVersion="1.21"
-        mappingsVersion="2024.07.07"
+        minecraftVersion = "1.21"
+        mappingsVersion = "2024.11.10"
     }
-}
-
-dependencies {
-    implementation 'net.neoforged:neoforge:21.0.106-beta'
 }
 
 jar {
-    from('/') {
-        include 'LICENSE.txt'
-    }
+    from(files('LICENSE.txt'))
 
     manifest {
         attributes([
                 "Specification-Title": "signbutton",
                 "Specification-Vendor": "gigaherz",
                 "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": project.name,
+                "Implementation-Title": "sewingkit",
                 "Implementation-Version": project.version,
                 "Implementation-Vendor" :"gigaherz",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
     }
 }

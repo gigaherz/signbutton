@@ -5,11 +5,11 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -27,10 +27,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
 import javax.annotation.Nullable;
@@ -232,7 +228,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
     {
         if (!switch (state.getValue(FACE))
         {
@@ -253,7 +249,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
             level.scheduleTick(new BlockPos(pos), this, TICK_RATE);
         }
 
-        return ItemInteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -301,11 +297,12 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos)
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess tickAccess,
+                                     BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource randomSource)
     {
-        return facing.getOpposite() == getEffectiveFacing(stateIn) && !stateIn.canSurvive(worldIn, currentPos)
+        return facing.getOpposite() == getEffectiveFacing(state) && !state.canSurvive(level, currentPos)
                 ? Blocks.AIR.defaultBlockState()
-                : super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+                : super.updateShape(state, level, tickAccess, currentPos, facing, facingPos, facingState, randomSource);
     }
 
     @Deprecated

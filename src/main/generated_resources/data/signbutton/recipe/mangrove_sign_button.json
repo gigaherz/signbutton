@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:mangrove_sign"
-    },
-    {
-      "item": "minecraft:redstone_torch"
-    }
+    "minecraft:mangrove_sign",
+    "minecraft:redstone_torch"
   ],
   "result": {
     "count": 1,

@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:cherry_sign"
-    },
-    {
-      "item": "minecraft:redstone_torch"
-    }
+    "minecraft:cherry_sign",
+    "minecraft:redstone_torch"
   ],
   "result": {
     "count": 1,

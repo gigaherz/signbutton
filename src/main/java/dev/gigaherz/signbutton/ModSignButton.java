@@ -15,6 +15,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -61,36 +62,36 @@ public class ModSignButton
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
-    public static DeferredBlock<SignButtonBlock> ACACIA_SIGN_BUTTON = BLOCKS.register("acacia_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.ACACIA_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.ACACIA)));
-    public static DeferredBlock<SignButtonBlock> BIRCH_SIGN_BUTTON = BLOCKS.register("birch_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.BIRCH_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.BIRCH)));
-    public static DeferredBlock<SignButtonBlock> DARK_OAK_SIGN_BUTTON = BLOCKS.register("dark_oak_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.DARK_OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.DARK_OAK)));
-    public static DeferredBlock<SignButtonBlock> JUNGLE_SIGN_BUTTON = BLOCKS.register("jungle_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.JUNGLE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.JUNGLE)));
-    public static DeferredBlock<SignButtonBlock> OAK_SIGN_BUTTON = BLOCKS.register("oak_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.OAK)));
-    public static DeferredBlock<SignButtonBlock> SPRUCE_SIGN_BUTTON = BLOCKS.register("spruce_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.SPRUCE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.SPRUCE)));
-    public static DeferredBlock<SignButtonBlock> MANGROVE_SIGN_BUTTON = BLOCKS.register("mangrove_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.MANGROVE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.MANGROVE)));
-    public static DeferredBlock<SignButtonBlock> BAMBOO_SIGN_BUTTON = BLOCKS.register("bamboo_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.BAMBOO_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava(), SignButtonWoodTypes.setSupported(WoodType.BAMBOO)));
-    public static DeferredBlock<SignButtonBlock> CHERRY_SIGN_BUTTON = BLOCKS.register("cherry_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.CHERRY_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CHERRY)));
-    public static DeferredBlock<SignButtonBlock> CRIMSON_SIGN_BUTTON = BLOCKS.register("crimson_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.CRIMSON_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CRIMSON)));
-    public static DeferredBlock<SignButtonBlock> WARPED_SIGN_BUTTON = BLOCKS.register("warped_sign_button", () -> new SignButtonBlock(BlockBehaviour.Properties.of().mapColor(Blocks.WARPED_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.WARPED)));
+    public static DeferredBlock<SignButtonBlock> ACACIA_SIGN_BUTTON = BLOCKS.registerBlock("acacia_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.ACACIA_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.ACACIA)));
+    public static DeferredBlock<SignButtonBlock> BIRCH_SIGN_BUTTON = BLOCKS.registerBlock("birch_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.BIRCH_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.BIRCH)));
+    public static DeferredBlock<SignButtonBlock> DARK_OAK_SIGN_BUTTON = BLOCKS.registerBlock("dark_oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.DARK_OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.DARK_OAK)));
+    public static DeferredBlock<SignButtonBlock> JUNGLE_SIGN_BUTTON = BLOCKS.registerBlock("jungle_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.JUNGLE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.JUNGLE)));
+    public static DeferredBlock<SignButtonBlock> OAK_SIGN_BUTTON = BLOCKS.registerBlock("oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.OAK)));
+    public static DeferredBlock<SignButtonBlock> SPRUCE_SIGN_BUTTON = BLOCKS.registerBlock("spruce_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.SPRUCE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.SPRUCE)));
+    public static DeferredBlock<SignButtonBlock> MANGROVE_SIGN_BUTTON = BLOCKS.registerBlock("mangrove_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.MANGROVE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.MANGROVE)));
+    public static DeferredBlock<SignButtonBlock> BAMBOO_SIGN_BUTTON = BLOCKS.registerBlock("bamboo_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.BAMBOO_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava(), SignButtonWoodTypes.setSupported(WoodType.BAMBOO)));
+    public static DeferredBlock<SignButtonBlock> CHERRY_SIGN_BUTTON = BLOCKS.registerBlock("cherry_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.CHERRY_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CHERRY)));
+    public static DeferredBlock<SignButtonBlock> CRIMSON_SIGN_BUTTON = BLOCKS.registerBlock("crimson_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.CRIMSON_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CRIMSON)));
+    public static DeferredBlock<SignButtonBlock> WARPED_SIGN_BUTTON = BLOCKS.registerBlock("warped_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.WARPED_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.WARPED)));
 
-    public static DeferredItem<SignButtonItem> ACACIA_SIGN_BUTTON_ITEM = ITEMS.register("acacia_sign_button", () -> new SignButtonItem(ACACIA_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> BIRCH_SIGN_BUTTON_ITEM = ITEMS.register("birch_sign_button", () -> new SignButtonItem(BIRCH_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> DARK_OAK_SIGN_BUTTON_ITEM = ITEMS.register("dark_oak_sign_button", () -> new SignButtonItem(DARK_OAK_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> JUNGLE_SIGN_BUTTON_ITEM = ITEMS.register("jungle_sign_button", () -> new SignButtonItem(JUNGLE_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> OAK_SIGN_BUTTON_ITEM = ITEMS.register("oak_sign_button", () -> new SignButtonItem(OAK_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> SPRUCE_SIGN_BUTTON_ITEM = ITEMS.register("spruce_sign_button", () -> new SignButtonItem(SPRUCE_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> MANGROVE_SIGN_BUTTON_ITEM = ITEMS.register("mangrove_sign_button", () -> new SignButtonItem(MANGROVE_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> BAMBOO_SIGN_BUTTON_ITEM = ITEMS.register("bamboo_sign_button", () -> new SignButtonItem(BAMBOO_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> CHERRY_SIGN_BUTTON_ITEM = ITEMS.register("cherry_sign_button", () -> new SignButtonItem(CHERRY_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> CRIMSON_SIGN_BUTTON_ITEM = ITEMS.register("crimson_sign_button", () -> new SignButtonItem(CRIMSON_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
-    public static DeferredItem<SignButtonItem> WARPED_SIGN_BUTTON_ITEM = ITEMS.register("warped_sign_button", () -> new SignButtonItem(WARPED_SIGN_BUTTON.get(), new Item.Properties().stacksTo(16)));
+    public static DeferredItem<SignButtonItem> ACACIA_SIGN_BUTTON_ITEM = ITEMS.registerItem("acacia_sign_button", props -> new SignButtonItem(ACACIA_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> BIRCH_SIGN_BUTTON_ITEM = ITEMS.registerItem("birch_sign_button", props -> new SignButtonItem(BIRCH_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> DARK_OAK_SIGN_BUTTON_ITEM = ITEMS.registerItem("dark_oak_sign_button", props -> new SignButtonItem(DARK_OAK_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> JUNGLE_SIGN_BUTTON_ITEM = ITEMS.registerItem("jungle_sign_button", props -> new SignButtonItem(JUNGLE_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> OAK_SIGN_BUTTON_ITEM = ITEMS.registerItem("oak_sign_button", props -> new SignButtonItem(OAK_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> SPRUCE_SIGN_BUTTON_ITEM = ITEMS.registerItem("spruce_sign_button", props -> new SignButtonItem(SPRUCE_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> MANGROVE_SIGN_BUTTON_ITEM = ITEMS.registerItem("mangrove_sign_button", props -> new SignButtonItem(MANGROVE_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> BAMBOO_SIGN_BUTTON_ITEM = ITEMS.registerItem("bamboo_sign_button", props -> new SignButtonItem(BAMBOO_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> CHERRY_SIGN_BUTTON_ITEM = ITEMS.registerItem("cherry_sign_button", props -> new SignButtonItem(CHERRY_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> CRIMSON_SIGN_BUTTON_ITEM = ITEMS.registerItem("crimson_sign_button", props -> new SignButtonItem(CRIMSON_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
+    public static DeferredItem<SignButtonItem> WARPED_SIGN_BUTTON_ITEM = ITEMS.registerItem("warped_sign_button", props -> new SignButtonItem(WARPED_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
 
     public static DeferredHolder<BlockEntityType<?>, BlockEntityType<SignButtonBlockEntity>> SIGN_BUTTON_BLOCK_ENTITY = BLOCK_ENTITIES.register("sign_button", () ->
-            BlockEntityType.Builder.of(SignButtonBlockEntity::new,
+            new BlockEntityType<>(SignButtonBlockEntity::new,
                     ACACIA_SIGN_BUTTON.get(), BIRCH_SIGN_BUTTON.get(), DARK_OAK_SIGN_BUTTON.get(),
                     JUNGLE_SIGN_BUTTON.get(), OAK_SIGN_BUTTON.get(), SPRUCE_SIGN_BUTTON.get(),
                     MANGROVE_SIGN_BUTTON.get(), BAMBOO_SIGN_BUTTON.get(), CHERRY_SIGN_BUTTON.get(),
-                    CRIMSON_SIGN_BUTTON.get(), WARPED_SIGN_BUTTON.get()).build(null));
+                    CRIMSON_SIGN_BUTTON.get(), WARPED_SIGN_BUTTON.get()));
 
     public ModSignButton(IEventBus modEventBus)
     {
@@ -151,37 +152,51 @@ public class ModSignButton
             gen.addProvider(event.includeServer(), new ItemTags(gen.getPackOutput(), event.getExistingFileHelper(), event.getLookupProvider()));
         }
 
-        private static class Recipes extends RecipeProvider
+        private static class Recipes extends RecipeProvider.Runner
         {
-            public Recipes(PackOutput gen, CompletableFuture<HolderLookup.Provider> lookup)
+            public Recipes(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider)
             {
-                super(gen, lookup);
+                super(output, lookupProvider);
             }
 
             @Override
-            protected void buildRecipes(RecipeOutput consumer)
+            protected RecipeProvider createRecipeProvider(HolderLookup.Provider lookup, RecipeOutput output)
             {
-                signRecipe(consumer, OAK_SIGN_BUTTON_ITEM, Items.OAK_SIGN);
-                signRecipe(consumer, SPRUCE_SIGN_BUTTON_ITEM, Items.SPRUCE_SIGN);
-                signRecipe(consumer, BIRCH_SIGN_BUTTON_ITEM, Items.BIRCH_SIGN);
-                signRecipe(consumer, JUNGLE_SIGN_BUTTON_ITEM, Items.JUNGLE_SIGN);
-                signRecipe(consumer, ACACIA_SIGN_BUTTON_ITEM, Items.ACACIA_SIGN);
-                signRecipe(consumer, DARK_OAK_SIGN_BUTTON_ITEM, Items.DARK_OAK_SIGN);
-                signRecipe(consumer, MANGROVE_SIGN_BUTTON_ITEM, Items.MANGROVE_SIGN);
-                signRecipe(consumer, BAMBOO_SIGN_BUTTON_ITEM, Items.BAMBOO_SIGN);
-                signRecipe(consumer, CHERRY_SIGN_BUTTON_ITEM, Items.CHERRY_SIGN);
-                signRecipe(consumer, CRIMSON_SIGN_BUTTON_ITEM, Items.CRIMSON_SIGN);
-                signRecipe(consumer, WARPED_SIGN_BUTTON_ITEM, Items.WARPED_SIGN);
+                return new VanillaRecipeProvider(lookup, output)
+                {
+
+                    @Override
+                    protected void buildRecipes()
+                    {
+                        signRecipe(output, OAK_SIGN_BUTTON_ITEM, Items.OAK_SIGN);
+                        signRecipe(output, SPRUCE_SIGN_BUTTON_ITEM, Items.SPRUCE_SIGN);
+                        signRecipe(output, BIRCH_SIGN_BUTTON_ITEM, Items.BIRCH_SIGN);
+                        signRecipe(output, JUNGLE_SIGN_BUTTON_ITEM, Items.JUNGLE_SIGN);
+                        signRecipe(output, ACACIA_SIGN_BUTTON_ITEM, Items.ACACIA_SIGN);
+                        signRecipe(output, DARK_OAK_SIGN_BUTTON_ITEM, Items.DARK_OAK_SIGN);
+                        signRecipe(output, MANGROVE_SIGN_BUTTON_ITEM, Items.MANGROVE_SIGN);
+                        signRecipe(output, BAMBOO_SIGN_BUTTON_ITEM, Items.BAMBOO_SIGN);
+                        signRecipe(output, CHERRY_SIGN_BUTTON_ITEM, Items.CHERRY_SIGN);
+                        signRecipe(output, CRIMSON_SIGN_BUTTON_ITEM, Items.CRIMSON_SIGN);
+                        signRecipe(output, WARPED_SIGN_BUTTON_ITEM, Items.WARPED_SIGN);
+                    }
+
+                    private void signRecipe(RecipeOutput consumer, Supplier<SignButtonItem> signButton, Item originalSign)
+                    {
+                        shapeless(RecipeCategory.MISC, signButton.get())
+                                .requires(originalSign)
+                                .requires(Items.REDSTONE_TORCH)
+                                .unlockedBy("has_torch", has(Items.REDSTONE_TORCH))
+                                .unlockedBy("has_sign", has(originalSign))
+                                .save(consumer);
+                    }
+                };
             }
 
-            private static void signRecipe(RecipeOutput consumer, Supplier<SignButtonItem> signButton, Item originalSign)
+            @Override
+            public String getName()
             {
-                ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, signButton.get())
-                        .requires(originalSign)
-                        .requires(Items.REDSTONE_TORCH)
-                        .unlockedBy("has_torch", has(Items.REDSTONE_TORCH))
-                        .unlockedBy("has_sign", has(originalSign))
-                        .save(consumer);
+                return "Recipes";
             }
         }
 

@@ -17,13 +17,13 @@ authors="gigaherz"
 [[dependencies.signbutton]]
     modId="neoforge"
     type="required"
-    versionRange="[21.0.105-beta,)"
+    versionRange="[21.3.19-beta,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.signbutton]]
     modId="minecraft"
     type="required"
-    versionRange="[1.21,1.22)"
+    versionRange="[1.21.3,1.22)"
     ordering="NONE"
     side="BOTH"
