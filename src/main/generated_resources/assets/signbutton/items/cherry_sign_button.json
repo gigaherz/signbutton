@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "signbutton:item/cherry_sign_button"
+  }
+}
