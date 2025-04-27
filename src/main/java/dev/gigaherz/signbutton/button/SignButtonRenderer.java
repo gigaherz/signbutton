@@ -26,9 +26,11 @@ import net.minecraft.util.TriState;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 import java.util.HashMap;
@@ -97,7 +99,8 @@ public class SignButtonRenderer
     }
 
     @Override
-    public void render(SignButtonBlockEntity signButtonBlockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn)
+    public void render(SignButtonBlockEntity signButtonBlockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource,
+                       int combinedLightIn, int combinedOverlayIn, Vec3 vec3)
     {
         final float scale = 0.6666667F;
 
@@ -151,12 +154,12 @@ public class SignButtonRenderer
         poseStack.scale(scale, -scale, -scale);
         {
             Material material = signMaterials.computeIfAbsent(woodtype, woodType -> createSignMaterial(woodtype));
-            VertexConsumer ivertexbuilder = material.buffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
+            VertexConsumer ivertexbuilder = material.buffer(bufferSource, NeoForgeRenderTypes::getUnsortedTranslucent);
             model.root().render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
-        //((MultiBufferSource.BufferSource)bufferIn).endBatch();
+        //((MultiBufferSource.BufferSource)bufferSource).endBatch();
         {
-            VertexConsumer ivertexbuilder = SIGN_BUTTON_OVERLAY_MATERIAL.buffer(bufferIn, ButtonRenderTypes::entityTranslucentUnsorted);
+            VertexConsumer ivertexbuilder = SIGN_BUTTON_OVERLAY_MATERIAL.buffer(bufferSource, NeoForgeRenderTypes::getUnsortedTranslucent);
             overlayModel.root().render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
         }
         poseStack.popPose();
@@ -191,38 +194,14 @@ public class SignButtonRenderer
             if (text != null) {
                 float f3 = (float)(-font.width(text) / 2);
                 if (drawOutline) {
-                    font.drawInBatch8xOutline(text, f3, (float)(line * 10 - 20), color1, adjustedColor, poseStack.last().pose(), bufferIn, glowCombinedLight);
+                    font.drawInBatch8xOutline(text, f3, (float)(line * 10 - 20), color1, adjustedColor, poseStack.last().pose(), bufferSource, glowCombinedLight);
                 } else {
-                    font.drawInBatch(text, f3, (float)(line * 10 - 20), color1, false, poseStack.last().pose(), bufferIn, Font.DisplayMode.NORMAL, 0, glowCombinedLight);
+                    font.drawInBatch(text, f3, (float)(line * 10 - 20), color1, false, poseStack.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, glowCombinedLight);
                 }
             }
         }
 
         poseStack.popPose();
-    }
-
-    private static class ButtonRenderTypes extends RenderType
-    {
-        private ButtonRenderTypes(String name, VertexFormat fmt, VertexFormat.Mode glMode, int bufferSize, boolean useDelegate, boolean useSorting, Runnable setupRendering, Runnable cleanupRendering)
-        {
-            super(name, fmt, glMode, bufferSize, useDelegate, useSorting, setupRendering, cleanupRendering);
-        }
-
-        public static RenderType entityTranslucentUnsorted(ResourceLocation texture, boolean doOverlay) {
-            RenderType.CompositeState compositeState = RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, TriState.FALSE, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setLightmapState(LIGHTMAP)
-                    .setOverlayState(OVERLAY)
-                    .createCompositeState(doOverlay);
-            return create("entity_translucent_unsorted", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false/*no sorting*/, compositeState);
-        }
-
-        public static RenderType entityTranslucentUnsorted(ResourceLocation texture) {
-            return entityTranslucentUnsorted(texture, true);
-        }
     }
 }
 

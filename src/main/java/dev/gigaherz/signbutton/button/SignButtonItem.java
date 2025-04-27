@@ -22,12 +22,12 @@ public class SignButtonItem extends BlockItem
     }
 
     @Override
-    protected boolean updateCustomBlockEntityTag(BlockPos pos, Level worldIn, @Nullable Player player, ItemStack stack, BlockState state)
+    protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state)
     {
-        boolean flag = super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state);
-        if (!worldIn.isClientSide && !flag && player != null)
+        boolean flag = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
+        if (!level.isClientSide && !flag && player != null)
         {
-            BlockEntity te = worldIn.getBlockEntity(pos);
+            BlockEntity te = level.getBlockEntity(pos);
             if (te instanceof SignButtonBlockEntity sbe)
             {
                 sbe.setAllowedPlayerEditor(player.getUUID());

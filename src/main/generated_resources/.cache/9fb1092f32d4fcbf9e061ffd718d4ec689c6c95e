@@ -1,4 +1,4 @@
-// 1.21.4	2024-12-29T00:10:27.118282	Recipes
+// 1.21.5	2025-04-27T20:08:32.0763535	Recipes
 b9a7fff6383b56774a1e68e519a22cbfcb4de704 data/signbutton/advancement/recipes/misc/acacia_sign_button.json
 7c4c2f07087f3569fdaecbf4a5aed1d15e54447c data/signbutton/advancement/recipes/misc/bamboo_sign_button.json
 9108ba18de4300effbb083ae00f80421d6a01f8b data/signbutton/advancement/recipes/misc/birch_sign_button.json
@@ -8,6 +8,7 @@ eb027bc72aa6175f6dfddb2db093e25b2dd09f08 data/signbutton/advancement/recipes/mis
 21d1b1e4806883e85475b5e75f1d8dbdc8dec61b data/signbutton/advancement/recipes/misc/jungle_sign_button.json
 0378af640e9895cc85b1dd381494fbe3c3bce514 data/signbutton/advancement/recipes/misc/mangrove_sign_button.json
 ef3c37a77c674e5327480314f0552d8c73fd8124 data/signbutton/advancement/recipes/misc/oak_sign_button.json
+b6514c37d602b585b98037d910a204bb05b35e1d data/signbutton/advancement/recipes/misc/pale_oak_sign_button.json
 62d9e28f8e31bb6a6c98a396e8b967da2aa99770 data/signbutton/advancement/recipes/misc/spruce_sign_button.json
 428cc9132cec710d4954846861f33d914fffac0f data/signbutton/advancement/recipes/misc/warped_sign_button.json
 a7a5b2db45c51a93c65e16a02ce647869293035a data/signbutton/recipe/acacia_sign_button.json
@@ -19,5 +20,6 @@ c224471f09cf237e4da699f2c8d1432d87d81ebf data/signbutton/recipe/dark_oak_sign_bu
 46e5cc08e428017ac4f2df2e0ef08d39ce9e92cb data/signbutton/recipe/jungle_sign_button.json
 7076a9853bd57a80461b4b80eec429bb3d267ac1 data/signbutton/recipe/mangrove_sign_button.json
 c5cd79778aff179fc01b09e5adc11cfed2bce0b1 data/signbutton/recipe/oak_sign_button.json
+fa5e4c759cff3254bb564437b48ea9801cef0764 data/signbutton/recipe/pale_oak_sign_button.json
 e84d95d0bf589aedbca81147200f3d37c6ba30a2 data/signbutton/recipe/spruce_sign_button.json
 87e719a7ccaf265585b81541940ca5904647057f data/signbutton/recipe/warped_sign_button.json

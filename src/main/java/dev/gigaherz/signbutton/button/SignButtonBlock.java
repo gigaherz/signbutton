@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -243,7 +244,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
         if (!state.getValue(POWERED))
         {
             level.setBlockAndUpdate(pos, state.setValue(POWERED, true));
-            //worldIn.markForRerender(pos);
+            //level.markForRerender(pos);
             level.playSound(player, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
             notifyFacing(state, level, pos);
             level.scheduleTick(new BlockPos(pos), this, TICK_RATE);
@@ -258,15 +259,15 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
         return state.getValue(FACING).toYRot();
     }
 
-    private void notifyFacing(BlockState state, Level worldIn, BlockPos pos)
+    private void notifyFacing(BlockState state, Level level, BlockPos pos)
     {
-        notifyNeighbors(worldIn, pos, getEffectiveFacing(state).getOpposite());
+        notifyNeighbors(level, pos, getEffectiveFacing(state).getOpposite());
     }
 
-    private void notifyNeighbors(Level worldIn, BlockPos pos, Direction facing)
+    private void notifyNeighbors(Level level, BlockPos pos, Direction facing)
     {
-        worldIn.updateNeighborsAt(pos, this);
-        worldIn.updateNeighborsAt(pos.relative(facing), this);
+        level.updateNeighborsAt(pos, this);
+        level.updateNeighborsAt(pos.relative(facing), this);
     }
 
     @Deprecated
@@ -305,70 +306,60 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
                 : super.updateShape(state, level, tickAccess, currentPos, facing, facingPos, facingState, randomSource);
     }
 
-    @Deprecated
-    @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
-    {
-        if (!isMoving && state.getBlock() != newState.getBlock())
-        {
-            if (state.getValue(POWERED))
-            {
-                notifyFacing(state, worldIn, pos);
-            }
 
-            super.onRemove(state, worldIn, pos, newState, isMoving);
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean something)
+    {
+        if (state.getValue(POWERED))
+        {
+            notifyFacing(state, level, pos);
         }
+
+        super.affectNeighborsAfterRemoval(state, level, pos, something);
     }
 
     @Deprecated
     @Override
-    public void randomTick(BlockState p_222954_, ServerLevel p_222955_, BlockPos p_222956_, RandomSource p_222957_)
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource rand)
     {
-        super.randomTick(p_222954_, p_222955_, p_222956_, p_222957_);
-    }
-
-    @Deprecated
-    @Override
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand)
-    {
-        if (!worldIn.isClientSide)
+        if (!level.isClientSide)
         {
             if (state.getValue(POWERED))
             {
-                worldIn.setBlockAndUpdate(pos, state.setValue(POWERED, false));
-                notifyFacing(state, worldIn, pos);
-                //worldIn.markForRerender(pos);
-                worldIn.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundSource.BLOCKS, 0.3F, 0.5F);
+                level.setBlockAndUpdate(pos, state.setValue(POWERED, false));
+                notifyFacing(state, level, pos);
+                //level.markForRerender(pos);
+                level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundSource.BLOCKS, 0.3F, 0.5F);
             }
         }
     }
 
     @Deprecated
     @Override
-    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier)
     {
-        if (!worldIn.isClientSide && !state.getValue(POWERED))
+        if (!level.isClientSide && !state.getValue(POWERED))
         {
-            this.checkArrows(state, worldIn, pos);
+            this.checkArrows(state, level, pos);
         }
     }
 
-    private void checkArrows(BlockState state, Level worldIn, BlockPos pos)
+    private void checkArrows(BlockState state, Level level, BlockPos pos)
     {
-        List<? extends Entity> list = worldIn.getEntitiesOfClass(AbstractArrow.class, state.getShape(worldIn, pos).bounds().move(pos));
+        List<? extends Entity> list = level.getEntitiesOfClass(AbstractArrow.class, state.getShape(level, pos).bounds().move(pos));
         boolean arrowsPresent = !list.isEmpty();
         boolean currentlyPowered = state.getValue(POWERED);
         if (arrowsPresent != currentlyPowered)
         {
-            worldIn.setBlockAndUpdate(pos, state.setValue(POWERED, true));
-            //worldIn.markForRerender(pos);
-            notifyFacing(state, worldIn, pos);
-            worldIn.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
+            level.setBlockAndUpdate(pos, state.setValue(POWERED, true));
+            //level.markForRerender(pos);
+            notifyFacing(state, level, pos);
+            level.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
         }
 
         if (arrowsPresent)
         {
-            worldIn.scheduleTick(new BlockPos(pos), this, TICK_RATE);
+            level.scheduleTick(new BlockPos(pos), this, TICK_RATE);
         }
     }
 }
