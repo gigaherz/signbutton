@@ -55,7 +55,7 @@ public class SignButtonRenderer
         return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
     }
 
-    @EventBusSubscriber(value= Dist.CLIENT, modid= ModSignButton.MODID, bus= EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(value= Dist.CLIENT, modid= ModSignButton.MODID)
     public static class Events
     {
         public static LayerDefinition createSignOverlayLayer() {
