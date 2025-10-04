@@ -25,7 +25,7 @@ public class SignButtonItem extends BlockItem
     protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state)
     {
         boolean flag = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
-        if (!level.isClientSide && !flag && player != null)
+        if (!level.isClientSide() && !flag && player != null)
         {
             BlockEntity te = level.getBlockEntity(pos);
             if (te instanceof SignButtonBlockEntity sbe)

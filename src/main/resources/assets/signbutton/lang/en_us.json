@@ -9,5 +9,6 @@
     "block.signbutton.bamboo_sign_button" : "Bamboo Sign Button",
     "block.signbutton.cherry_sign_button" : "Cherry Sign Button",
     "block.signbutton.crimson_sign_button" : "Crimson Sign Button",
-    "block.signbutton.warped_sign_button" : "Warped Sign Button"
+    "block.signbutton.warped_sign_button" : "Warped Sign Button",
+    "block.signbutton.pale_oak_sign_button" : "Pale Oak Sign Button"
 }

@@ -1,12 +1,10 @@
 package dev.gigaherz.signbutton.button;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
-import dev.gigaherz.signbutton.ModSignButton;
+import dev.gigaherz.signbutton.SignButtonMod;
+import dev.gigaherz.signbutton.client.OverlayRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.Model;
@@ -15,14 +13,22 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
+import net.minecraft.client.renderer.blockentity.state.SignRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.MaterialSet;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.TriState;
+import net.minecraft.util.Unit;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -32,6 +38,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,15 +47,24 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class SignButtonRenderer
-        implements BlockEntityRenderer<SignButtonBlockEntity>
+        implements BlockEntityRenderer<SignButtonBlockEntity, SignButtonRenderer.SignButtonRenderState>
 {
     public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, ResourceLocation.fromNamespaceAndPath("signbutton", "entity/sign_button"));
+    public static final float SIGN_SCALE = 0.6666667F;
 
-    public static final class SignButtonModel extends Model
+    public static final class SignButtonModel extends Model.Simple
     {
         public SignButtonModel(ModelPart rootPart) {
-            super(rootPart, RenderType::entityCutoutNoCull);
+            super(rootPart, (ResourceLocation tex) -> RenderType.entityTranslucent(tex, false));
         }
+    }
+
+    public static class SignButtonRenderState extends SignRenderState
+    {
+        public boolean powered;
+        public Direction facing;
+        public AttachFace face;
+        public WoodType woodtype;
     }
 
     public static ModelLayerLocation createSignButtonModelName(WoodType p_171292_) {
@@ -55,7 +72,7 @@ public class SignButtonRenderer
         return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
     }
 
-    @EventBusSubscriber(value= Dist.CLIENT, modid= ModSignButton.MODID)
+    @EventBusSubscriber(value= Dist.CLIENT, modid= SignButtonMod.MODID)
     public static class Events
     {
         public static LayerDefinition createSignOverlayLayer() {
@@ -81,127 +98,152 @@ public class SignButtonRenderer
     }
 
     private final Map<WoodType, SignRenderer.Models> signModels;
-    private final Map<WoodType, Model> overlayModels;
+    private final Map<WoodType, Model.Simple> overlayModels;
     private final Map<WoodType, Material> signMaterials = new HashMap<>();
     private final Font font;
+    private final MaterialSet materials;
 
     public SignButtonRenderer(BlockEntityRendererProvider.Context ctx)
     {
         this.signModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignRenderer.Models(
-                        SignRenderer.createSignModel(ctx.getModelSet(), woodType, true),
-                        SignRenderer.createSignModel(ctx.getModelSet(), woodType, false)
+                        SignRenderer.createSignModel(ctx.entityModelSet(), woodType, true),
+                        SignRenderer.createSignModel(ctx.entityModelSet(), woodType, false)
                 )));
         this.overlayModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignButtonModel(ctx.bakeLayer(createSignButtonModelName(woodType))))
         );
-        this.font = ctx.getFont();
+        this.font = ctx.font();
+        this.materials = ctx.materials();
     }
 
     @Override
-    public void render(SignButtonBlockEntity signButtonBlockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource,
-                       int combinedLightIn, int combinedOverlayIn, Vec3 vec3)
+    public SignButtonRenderState createRenderState()
     {
-        final float scale = 0.6666667F;
+        return new SignButtonRenderState();
+    }
 
-        poseStack.pushPose();
+    @Override
+    public void extractRenderState(SignButtonBlockEntity signButtonBlockEntity, SignButtonRenderState state, float p_446851_, Vec3 p_445788_, @Nullable ModelFeatureRenderer.CrumblingOverlay p_446944_)
+    {
+        BlockEntityRenderer.super.extractRenderState(signButtonBlockEntity, state, p_446851_, p_445788_, p_446944_);
+
+        // from AbstractSignRenderer
+        state.maxTextLineWidth = signButtonBlockEntity.getMaxTextLineWidth();
+        state.textLineHeight = signButtonBlockEntity.getTextLineHeight();
+        state.frontText = signButtonBlockEntity.getFrontText();
+        state.backText = signButtonBlockEntity.getBackText();
+        state.isTextFilteringEnabled = Minecraft.getInstance().isTextFilteringEnabled();
+        state.drawOutline = AbstractSignRenderer.isOutlineVisible(signButtonBlockEntity.getBlockPos());
+        // end from
 
         BlockState blockstate = signButtonBlockEntity.getBlockState();
 
-        boolean powered = blockstate.getValue(SignButtonBlock.POWERED);
-        Direction facing = blockstate.getValue(SignButtonBlock.FACING);
-        AttachFace face = blockstate.getValue(SignButtonBlock.FACE);
+        state.powered = blockstate.getValue(SignButtonBlock.POWERED);
+        state.facing = blockstate.getValue(SignButtonBlock.FACING);
+        state.face = blockstate.getValue(SignButtonBlock.FACE);
 
-        int rotAroundX = 0;
-        switch (face)
+        state.woodtype = signButtonBlockEntity.getWoodType();
+    }
+
+    @Override
+    public void submit(SignButtonRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraState)
+    {
+        int rotAroundX = switch (state.face)
         {
-            case CEILING:
-                rotAroundX = 90;
-                break;
-            case FLOOR:
-                rotAroundX = -90;
-                break;
-        }
+            case CEILING -> 90;
+            case FLOOR -> -90;
+            default -> 0;
+        };
 
-        int rotAroundY = 0;
-        switch (facing)
+        int rotAroundY = switch (state.facing)
         {
-            case SOUTH:
-                break;
-            case NORTH:
-                rotAroundY = 180;
-                break;
-            case EAST:
-                rotAroundY = 90;
-                break;
-            case WEST:
-                rotAroundY = -90;
-                break;
-        }
+            case NORTH -> 180;
+            case EAST -> 90;
+            case WEST -> -90;
+            default -> 0;
+        };
 
-        poseStack.translate(0.5, 0.5, 0.5);
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotAroundY));
-        poseStack.mulPose(Axis.XP.rotationDegrees(rotAroundX));
-        poseStack.translate(0.0, -0.3125, -0.4375D - (powered ? 0.035 : 0));
+        var models = this.signModels.get(state.woodtype);
 
-        WoodType woodtype = signButtonBlockEntity.getWoodType();
-        var models = this.signModels.get(woodtype);
-        var model = models.wall();
-        var overlayModel = this.overlayModels.get(woodtype);
-        //model.stick.visible=false;
+        var baseModel = models.wall();
+        var overlayModel = this.overlayModels.get(state.woodtype);
 
         poseStack.pushPose();
-        poseStack.scale(scale, -scale, -scale);
         {
-            Material material = signMaterials.computeIfAbsent(woodtype, woodType -> createSignMaterial(woodtype));
-            VertexConsumer ivertexbuilder = material.buffer(bufferSource, NeoForgeRenderTypes::getUnsortedTranslucent);
-            model.root().render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
-        }
-        //((MultiBufferSource.BufferSource)bufferSource).endBatch();
-        {
-            VertexConsumer ivertexbuilder = SIGN_BUTTON_OVERLAY_MATERIAL.buffer(bufferSource, NeoForgeRenderTypes::getUnsortedTranslucent);
-            overlayModel.root().render(poseStack, ivertexbuilder, combinedLightIn, combinedOverlayIn);
-        }
-        poseStack.popPose();
-        poseStack.translate(0.0D, (double) 0.33333334F, (double) 0.046666667F);
-        poseStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
+            poseStack.translate(0.5, 0.5, 0.5);
+            poseStack.mulPose(Axis.YP.rotationDegrees(rotAroundY));
+            poseStack.mulPose(Axis.XP.rotationDegrees(rotAroundX));
+            poseStack.translate(0.0, -0.3125, -0.4375D - (state.powered ? 0.035 : 0));
 
-        var frontText=signButtonBlockEntity.getFrontText();
-        int adjustedColor = SignRenderer.getDarkColor(frontText);
+            poseStack.pushPose();
+            {
+                poseStack.scale(SIGN_SCALE, -SIGN_SCALE, -SIGN_SCALE);
 
-        FormattedCharSequence[] lines = frontText.getRenderMessages(Minecraft.getInstance().isTextFilteringEnabled(), (text) -> {
-            List<FormattedCharSequence> list = this.font.split(text, 90);
-            return list.isEmpty() ? FormattedCharSequence.EMPTY : list.get(0);
-        });
+                var signMaterial = Sheets.getSignMaterial(state.woodtype);
+                var baseRenderType = signMaterial.renderType(baseModel::renderType);
+                collector.order(1).submitModel(
+                        baseModel, Unit.INSTANCE, poseStack, baseRenderType, state.lightCoords, OverlayTexture.NO_OVERLAY, -1,
+                        this.materials.get(signMaterial), 0, state.breakProgress
+                );
 
-
-        int color1;
-        boolean drawOutline;
-        int glowCombinedLight;
-        if (frontText.hasGlowingText()) {
-            color1 = frontText.getColor().getTextColor();
-            drawOutline = SignRenderer.isOutlineVisible(signButtonBlockEntity.getBlockPos(), color1);
-            glowCombinedLight = LightTexture.FULL_BRIGHT;
-        } else {
-            color1 = adjustedColor;
-            drawOutline = false;
-            glowCombinedLight = combinedLightIn;
-        }
-
-        for (int line = 0; line < 4; ++line)
-        {
-            FormattedCharSequence text = lines[line];
-            if (text != null) {
-                float f3 = (float)(-font.width(text) / 2);
-                if (drawOutline) {
-                    font.drawInBatch8xOutline(text, f3, (float)(line * 10 - 20), color1, adjustedColor, poseStack.last().pose(), bufferSource, glowCombinedLight);
-                } else {
-                    font.drawInBatch(text, f3, (float)(line * 10 - 20), color1, false, poseStack.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, glowCombinedLight);
-                }
+                var overlayMaterial = SIGN_BUTTON_OVERLAY_MATERIAL;
+                var overlayRenderType = overlayMaterial.renderType(OverlayRenderType::of);
+                collector.order(1).submitModel(
+                        overlayModel, Unit.INSTANCE, poseStack, overlayRenderType, state.lightCoords, OverlayTexture.NO_OVERLAY, -1,
+                        this.materials.get(overlayMaterial), 0, state.breakProgress
+                );
             }
-        }
+            poseStack.popPose();
 
+            this.submitSignText(state, poseStack, collector, true);
+            this.submitSignText(state, poseStack, collector, false);
+        }
         poseStack.popPose();
+    }
+
+    // copied from SignRenderer
+    private void submitSignText(SignRenderState state, PoseStack poseStack, SubmitNodeCollector collector, boolean front) {
+        SignText signtext = front ? state.frontText : state.backText;
+        if (signtext != null) {
+            poseStack.pushPose();
+            Vec3 offset = SignRenderer.TEXT_OFFSET;
+            if (!front) {
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+            }
+
+            float f1 = 0.015625F * SIGN_SCALE;
+            poseStack.translate(offset);
+            poseStack.scale(f1, -f1, f1);
+            int i = AbstractSignRenderer.getDarkColor(signtext);
+            int j = 4 * state.textLineHeight / 2;
+            FormattedCharSequence[] aformattedcharsequence = signtext.getRenderMessages(state.isTextFilteringEnabled, p_445219_ -> {
+                List<FormattedCharSequence> list = this.font.split(p_445219_, state.maxTextLineWidth);
+                return list.isEmpty() ? FormattedCharSequence.EMPTY : list.get(0);
+            });
+            int k;
+            boolean flag;
+            int l;
+            if (signtext.hasGlowingText()) {
+                k = signtext.getColor().getTextColor();
+                flag = k == DyeColor.BLACK.getTextColor() || state.drawOutline;
+                l = 15728880;
+            } else {
+                k = i;
+                flag = false;
+                l = state.lightCoords;
+            }
+
+            for (int i1 = 0; i1 < 4; i1++) {
+                FormattedCharSequence formattedcharsequence = aformattedcharsequence[i1];
+                float f = -this.font.width(formattedcharsequence) / 2;
+                collector.submitText(
+                        poseStack, f, i1 * state.textLineHeight - j, formattedcharsequence, false, Font.DisplayMode.POLYGON_OFFSET, l, k, 0, flag ? i : 0
+                );
+            }
+
+            poseStack.popPose();
+        }
     }
 }
 

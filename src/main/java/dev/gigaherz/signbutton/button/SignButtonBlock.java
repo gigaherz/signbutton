@@ -322,7 +322,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource rand)
     {
-        if (!level.isClientSide)
+        if (!level.isClientSide())
         {
             if (state.getValue(POWERED))
             {
@@ -338,7 +338,7 @@ public class SignButtonBlock extends SignBlock implements EntityBlock
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier)
     {
-        if (!level.isClientSide && !state.getValue(POWERED))
+        if (!level.isClientSide() && !state.getValue(POWERED))
         {
             this.checkArrows(state, level, pos);
         }

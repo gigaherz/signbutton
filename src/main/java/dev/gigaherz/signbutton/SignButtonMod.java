@@ -4,17 +4,13 @@ import dev.gigaherz.signbutton.button.SignButtonBlock;
 import dev.gigaherz.signbutton.button.SignButtonBlockEntity;
 import dev.gigaherz.signbutton.button.SignButtonItem;
 import dev.gigaherz.signbutton.button.SignButtonWoodTypes;
-import dev.gigaherz.signbutton.client.ClientUtils;
 import dev.gigaherz.signbutton.network.OpenSignButtonEditor;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
-import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
-import net.minecraft.client.renderer.block.model.Variant;
-import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -26,7 +22,6 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -38,10 +33,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -58,8 +51,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@Mod(ModSignButton.MODID)
-public class ModSignButton
+@Mod(SignButtonMod.MODID)
+public class SignButtonMod
 {
     public static final String MODID = "signbutton";
 
@@ -67,18 +60,18 @@ public class ModSignButton
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
 
-    public static DeferredBlock<SignButtonBlock> ACACIA_SIGN_BUTTON = BLOCKS.registerBlock("acacia_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.ACACIA_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.ACACIA)));
-    public static DeferredBlock<SignButtonBlock> BAMBOO_SIGN_BUTTON = BLOCKS.registerBlock("bamboo_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.BAMBOO_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava(), SignButtonWoodTypes.setSupported(WoodType.BAMBOO)));
-    public static DeferredBlock<SignButtonBlock> BIRCH_SIGN_BUTTON = BLOCKS.registerBlock("birch_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.BIRCH_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.BIRCH)));
-    public static DeferredBlock<SignButtonBlock> CHERRY_SIGN_BUTTON = BLOCKS.registerBlock("cherry_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.CHERRY_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CHERRY)));
-    public static DeferredBlock<SignButtonBlock> CRIMSON_SIGN_BUTTON = BLOCKS.registerBlock("crimson_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.CRIMSON_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CRIMSON)));
-    public static DeferredBlock<SignButtonBlock> DARK_OAK_SIGN_BUTTON = BLOCKS.registerBlock("dark_oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.DARK_OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.DARK_OAK)));
-    public static DeferredBlock<SignButtonBlock> JUNGLE_SIGN_BUTTON = BLOCKS.registerBlock("jungle_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.JUNGLE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.JUNGLE)));
-    public static DeferredBlock<SignButtonBlock> MANGROVE_SIGN_BUTTON = BLOCKS.registerBlock("mangrove_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.MANGROVE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.MANGROVE)));
-    public static DeferredBlock<SignButtonBlock> OAK_SIGN_BUTTON = BLOCKS.registerBlock("oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.OAK)));
-    public static DeferredBlock<SignButtonBlock> PALE_OAK_SIGN_BUTTON = BLOCKS.registerBlock("pale_oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.PALE_OAK_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.PALE_OAK)));
-    public static DeferredBlock<SignButtonBlock> SPRUCE_SIGN_BUTTON = BLOCKS.registerBlock("spruce_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.SPRUCE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollission().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.SPRUCE)));
-    public static DeferredBlock<SignButtonBlock> WARPED_SIGN_BUTTON = BLOCKS.registerBlock("warped_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.WARPED_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollission().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.WARPED)));
+    public static DeferredBlock<SignButtonBlock> ACACIA_SIGN_BUTTON = BLOCKS.registerBlock("acacia_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.ACACIA_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.ACACIA)));
+    public static DeferredBlock<SignButtonBlock> BAMBOO_SIGN_BUTTON = BLOCKS.registerBlock("bamboo_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.BAMBOO_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava(), SignButtonWoodTypes.setSupported(WoodType.BAMBOO)));
+    public static DeferredBlock<SignButtonBlock> BIRCH_SIGN_BUTTON = BLOCKS.registerBlock("birch_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.BIRCH_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.BIRCH)));
+    public static DeferredBlock<SignButtonBlock> CHERRY_SIGN_BUTTON = BLOCKS.registerBlock("cherry_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.CHERRY_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollision().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CHERRY)));
+    public static DeferredBlock<SignButtonBlock> CRIMSON_SIGN_BUTTON = BLOCKS.registerBlock("crimson_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.CRIMSON_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollision().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.CRIMSON)));
+    public static DeferredBlock<SignButtonBlock> DARK_OAK_SIGN_BUTTON = BLOCKS.registerBlock("dark_oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.DARK_OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.DARK_OAK)));
+    public static DeferredBlock<SignButtonBlock> JUNGLE_SIGN_BUTTON = BLOCKS.registerBlock("jungle_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.JUNGLE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.JUNGLE)));
+    public static DeferredBlock<SignButtonBlock> MANGROVE_SIGN_BUTTON = BLOCKS.registerBlock("mangrove_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.MANGROVE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.MANGROVE)));
+    public static DeferredBlock<SignButtonBlock> OAK_SIGN_BUTTON = BLOCKS.registerBlock("oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.OAK_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.OAK)));
+    public static DeferredBlock<SignButtonBlock> PALE_OAK_SIGN_BUTTON = BLOCKS.registerBlock("pale_oak_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.PALE_OAK_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollision().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.PALE_OAK)));
+    public static DeferredBlock<SignButtonBlock> SPRUCE_SIGN_BUTTON = BLOCKS.registerBlock("spruce_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.SPRUCE_PLANKS.defaultMapColor()).forceSolidOn().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0F).ignitedByLava().sound(SoundType.WOOD), SignButtonWoodTypes.setSupported(WoodType.SPRUCE)));
+    public static DeferredBlock<SignButtonBlock> WARPED_SIGN_BUTTON = BLOCKS.registerBlock("warped_sign_button", props -> new SignButtonBlock(props.mapColor(Blocks.WARPED_PLANKS.defaultMapColor()).instrument(NoteBlockInstrument.BASS).forceSolidOn().noCollision().strength(1.0F), SignButtonWoodTypes.setSupported(WoodType.WARPED)));
 
     public static DeferredItem<SignButtonItem> ACACIA_SIGN_BUTTON_ITEM = ITEMS.registerItem("acacia_sign_button", props -> new SignButtonItem(ACACIA_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
     public static DeferredItem<SignButtonItem> BAMBOO_SIGN_BUTTON_ITEM = ITEMS.registerItem("bamboo_sign_button", props -> new SignButtonItem(BAMBOO_SIGN_BUTTON.get(), props.stacksTo(16).useBlockDescriptionPrefix()));
@@ -110,7 +103,7 @@ public class ModSignButton
                     WARPED_SIGN_BUTTON.get()
             ));
 
-    public ModSignButton(IEventBus modEventBus)
+    public SignButtonMod(IEventBus modEventBus)
     {
 
         BLOCKS.register(modEventBus);
@@ -120,8 +113,6 @@ public class ModSignButton
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::addItemsToTabs);
         modEventBus.addListener(this::gatherData);
-
-        if (FMLEnvironment.dist == Dist.CLIENT) ClientUtils.initClient(modEventBus);
     }
 
     private void addItemsToTabs(BuildCreativeModeTabContentsEvent event)

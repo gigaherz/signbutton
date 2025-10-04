@@ -1,6 +1,6 @@
 package dev.gigaherz.signbutton.button;
 
-import dev.gigaherz.signbutton.ModSignButton;
+import dev.gigaherz.signbutton.SignButtonMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
@@ -11,13 +11,13 @@ public class SignButtonBlockEntity extends SignBlockEntity
 {
     public SignButtonBlockEntity(BlockPos pos, BlockState state)
     {
-        super(ModSignButton.SIGN_BUTTON_BLOCK_ENTITY.get(), pos, state);
+        super(SignButtonMod.SIGN_BUTTON_BLOCK_ENTITY.get(), pos, state);
     }
 
     @Override
     public BlockEntityType<?> getType()
     {
-        return ModSignButton.SIGN_BUTTON_BLOCK_ENTITY.get();
+        return SignButtonMod.SIGN_BUTTON_BLOCK_ENTITY.get();
     }
 
     public WoodType getWoodType()

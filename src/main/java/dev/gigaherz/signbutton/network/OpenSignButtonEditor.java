@@ -1,6 +1,6 @@
 package dev.gigaherz.signbutton.network;
 
-import dev.gigaherz.signbutton.client.ClientUtils;
+import dev.gigaherz.signbutton.client.SignButtonClientMod;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
@@ -27,6 +27,6 @@ public record OpenSignButtonEditor(BlockPos pos) implements CustomPacketPayload
 
     public void handle(IPayloadContext context)
     {
-        ClientUtils.openSignButtonGui(pos);
+        SignButtonClientMod.openSignButtonGui(pos);
     }
 }
