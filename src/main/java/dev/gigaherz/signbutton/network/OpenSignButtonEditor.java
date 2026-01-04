@@ -1,11 +1,11 @@
 package dev.gigaherz.signbutton.network;
 
 import dev.gigaherz.signbutton.client.SignButtonClientMod;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record OpenSignButtonEditor(BlockPos pos) implements CustomPacketPayload
@@ -15,7 +15,7 @@ public record OpenSignButtonEditor(BlockPos pos) implements CustomPacketPayload
             OpenSignButtonEditor::new
     );
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("signbutton","update_spell_sequence");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath("signbutton","update_spell_sequence");
 
     public static final Type<OpenSignButtonEditor> TYPE = new Type<>(ID);
 

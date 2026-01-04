@@ -18,10 +18,12 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.packs.VanillaRecipeProvider;
 import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -196,7 +198,7 @@ public class SignButtonMod
 
                 itemModels.generateLayeredItem(item.get(),
                         ModelLocationUtils.getModelLocation(itemTextureFrom),
-                        ResourceLocation.fromNamespaceAndPath("signbutton", "item/sign_button"));
+                        Identifier.fromNamespaceAndPath("signbutton", "item/sign_button"));
 
                 itemModels.itemModelOutput.accept(item.get(),
                         ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(item.get())));
@@ -290,7 +292,7 @@ public class SignButtonMod
                 protected Iterable<Block> getKnownBlocks()
                 {
                     return BuiltInRegistries.BLOCK.entrySet().stream()
-                            .filter(e -> e.getKey().location().getNamespace().equals(MODID))
+                            .filter(e -> e.getKey().identifier().getNamespace().equals(MODID))
                             .map(Map.Entry::getValue)
                             .collect(Collectors.toList());
                 }

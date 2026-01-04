@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.gigaherz.signbutton.SignButtonMod;
-import dev.gigaherz.signbutton.client.OverlayRenderType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.Model;
@@ -12,19 +11,21 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.client.renderer.blockentity.state.SignRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.MaterialSet;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.DyeColor;
@@ -36,9 +37,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.NeoForgeRenderTypes;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -49,13 +48,13 @@ import java.util.function.Function;
 public class SignButtonRenderer
         implements BlockEntityRenderer<SignButtonBlockEntity, SignButtonRenderer.SignButtonRenderState>
 {
-    public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, ResourceLocation.fromNamespaceAndPath("signbutton", "entity/sign_button"));
+    public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, Identifier.fromNamespaceAndPath("signbutton", "entity/sign_button"));
     public static final float SIGN_SCALE = 0.6666667F;
 
     public static final class SignButtonModel extends Model.Simple
     {
         public SignButtonModel(ModelPart rootPart) {
-            super(rootPart, (ResourceLocation tex) -> RenderType.entityTranslucent(tex, false));
+            super(rootPart, (Identifier tex) -> RenderTypes.entityTranslucent(tex, false));
         }
     }
 
@@ -68,8 +67,8 @@ public class SignButtonRenderer
     }
 
     public static ModelLayerLocation createSignButtonModelName(WoodType p_171292_) {
-        ResourceLocation location = ResourceLocation.parse(p_171292_.name());
-        return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
+        Identifier location = Identifier.parse(p_171292_.name());
+        return new ModelLayerLocation(Identifier.fromNamespaceAndPath(location.getNamespace(), "sign/" + location.getPath()), "signbutton_overlay");
     }
 
     @EventBusSubscriber(value= Dist.CLIENT, modid= SignButtonMod.MODID)
@@ -93,8 +92,8 @@ public class SignButtonRenderer
     }
 
     private static Material createSignMaterial(WoodType p_173386_) {
-        ResourceLocation location = ResourceLocation.parse(p_173386_.name());
-        return new Material(Sheets.SIGN_SHEET, ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
+        Identifier location = Identifier.parse(p_173386_.name());
+        return new Material(Sheets.SIGN_SHEET, Identifier.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
     }
 
     private final Map<WoodType, SignRenderer.Models> signModels;
@@ -188,7 +187,7 @@ public class SignButtonRenderer
                 );
 
                 var overlayMaterial = SIGN_BUTTON_OVERLAY_MATERIAL;
-                var overlayRenderType = overlayMaterial.renderType(OverlayRenderType::of);
+                var overlayRenderType = overlayMaterial.renderType(RenderTypes::entityTranslucent);
                 collector.order(1).submitModel(
                         overlayModel, Unit.INSTANCE, poseStack, overlayRenderType, state.lightCoords, OverlayTexture.NO_OVERLAY, -1,
                         this.materials.get(overlayMaterial), 0, state.breakProgress
