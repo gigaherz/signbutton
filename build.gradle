@@ -6,12 +6,12 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.137'
 }
 
-neoForge.version = "21.11.23-beta"
+neoForge.version = "26.1.0.0-alpha.3+snapshot-1"
 version = "2.11.0"
 group = "dev.gigaherz.signbutton"
 base.archivesName = "SignButton-${neoForge.minecraftVersion}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 java.withSourcesJar()
 
@@ -49,11 +49,6 @@ neoForge {
             clientData()
             programArguments.addAll '--mod', 'signbutton', '--all', '--output', file('src/main/generated_resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
-    }
-
-    parchment {
-        minecraftVersion="1.21.5"
-        mappingsVersion="2025.06.01"
     }
 
     mods {
