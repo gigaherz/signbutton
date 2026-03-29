@@ -16,19 +16,20 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.AbstractSignRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.SignRenderer;
+import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
 import net.minecraft.client.renderer.blockentity.state.SignRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.MaterialSet;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.PlainSignBlock;
 import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
@@ -39,6 +40,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3fc;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +50,7 @@ import java.util.function.Function;
 public class SignButtonRenderer
         implements BlockEntityRenderer<SignButtonBlockEntity, SignButtonRenderer.SignButtonRenderState>
 {
-    public static final Material SIGN_BUTTON_OVERLAY_MATERIAL = new Material(Sheets.SIGN_SHEET, Identifier.fromNamespaceAndPath("signbutton", "entity/sign_button"));
+    public static final SpriteId SIGN_BUTTON_OVERLAY_MATERIAL = new SpriteId(Sheets.SIGN_SHEET, Identifier.fromNamespaceAndPath("signbutton", "entity/sign_button"));
     public static final float SIGN_SCALE = 0.6666667F;
 
     public static final class SignButtonModel extends Model.Simple
@@ -91,29 +93,27 @@ public class SignButtonRenderer
         }
     }
 
-    private static Material createSignMaterial(WoodType p_173386_) {
+    private static SpriteId createSignMaterial(WoodType p_173386_) {
         Identifier location = Identifier.parse(p_173386_.name());
-        return new Material(Sheets.SIGN_SHEET, Identifier.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
+        return new SpriteId(Sheets.SIGN_SHEET, Identifier.fromNamespaceAndPath(location.getNamespace(), "entity/signs/" + location.getPath()));
     }
 
-    private final Map<WoodType, SignRenderer.Models> signModels;
+    private final ImmutableMap<WoodType, Model.Simple> signModels;
     private final Map<WoodType, Model.Simple> overlayModels;
-    private final Map<WoodType, Material> signMaterials = new HashMap<>();
+    private final Map<WoodType, SpriteId> signMaterials = new HashMap<>();
     private final Font font;
-    private final MaterialSet materials;
+    private final SpriteGetter materials;
 
     public SignButtonRenderer(BlockEntityRendererProvider.Context ctx)
     {
         this.signModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
-                woodType -> new SignRenderer.Models(
-                        SignRenderer.createSignModel(ctx.entityModelSet(), woodType, true),
-                        SignRenderer.createSignModel(ctx.entityModelSet(), woodType, false)
-                )));
+                woodType -> StandingSignRenderer.createSignModel(ctx.entityModelSet(), woodType, PlainSignBlock.Attachment.WALL)
+        ));
         this.overlayModels = SignButtonWoodTypes.supported().collect(ImmutableMap.toImmutableMap(Function.identity(),
                 woodType -> new SignButtonModel(ctx.bakeLayer(createSignButtonModelName(woodType))))
         );
         this.font = ctx.font();
-        this.materials = ctx.materials();
+        this.materials = ctx.sprites();
     }
 
     @Override
@@ -163,10 +163,11 @@ public class SignButtonRenderer
             default -> 0;
         };
 
-        var models = this.signModels.get(state.woodtype);
-
-        var baseModel = models.wall();
+        var baseModel = this.signModels.get(state.woodtype);
         var overlayModel = this.overlayModels.get(state.woodtype);
+
+        if (baseModel == null || overlayModel == null)
+            return;
 
         poseStack.pushPose();
         {
@@ -179,7 +180,7 @@ public class SignButtonRenderer
             {
                 poseStack.scale(SIGN_SCALE, -SIGN_SCALE, -SIGN_SCALE);
 
-                var signMaterial = Sheets.getSignMaterial(state.woodtype);
+                var signMaterial = Sheets.getSignSprite(state.woodtype);
                 var baseRenderType = signMaterial.renderType(baseModel::renderType);
                 collector.order(1).submitModel(
                         baseModel, Unit.INSTANCE, poseStack, baseRenderType, state.lightCoords, OverlayTexture.NO_OVERLAY, -1,
@@ -206,13 +207,13 @@ public class SignButtonRenderer
         SignText signtext = front ? state.frontText : state.backText;
         if (signtext != null) {
             poseStack.pushPose();
-            Vec3 offset = SignRenderer.TEXT_OFFSET;
+            Vector3fc offset = StandingSignRenderer.TEXT_OFFSET;
             if (!front) {
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
             }
 
             float f1 = 0.015625F * SIGN_SCALE;
-            poseStack.translate(offset);
+            poseStack.translate(offset.x(), offset.y(), offset.z());
             poseStack.scale(f1, -f1, f1);
             int i = AbstractSignRenderer.getDarkColor(signtext);
             int j = 4 * state.textLineHeight / 2;

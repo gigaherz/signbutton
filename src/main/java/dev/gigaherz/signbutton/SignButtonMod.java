@@ -11,6 +11,7 @@ import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -197,8 +198,8 @@ public class SignButtonMod
                 blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block.get(), blockModel));
 
                 itemModels.generateLayeredItem(item.get(),
-                        ModelLocationUtils.getModelLocation(itemTextureFrom),
-                        Identifier.fromNamespaceAndPath("signbutton", "item/sign_button"));
+                        new Material(ModelLocationUtils.getModelLocation(itemTextureFrom)),
+                        new Material(Identifier.fromNamespaceAndPath("signbutton", "item/sign_button")));
 
                 itemModels.itemModelOutput.accept(item.get(),
                         ItemModelUtils.plainModel(ModelLocationUtils.getModelLocation(item.get())));
